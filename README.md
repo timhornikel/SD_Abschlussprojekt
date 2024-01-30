@@ -1,5 +1,4 @@
 # SD_Abschlussprojekt
-Sandra/Oskar/Tim 
 Projektname: Musikstücke identifizieren
 Projektteam: Sandra, Oskar und Tim
 
