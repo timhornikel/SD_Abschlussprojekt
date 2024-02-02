@@ -11,6 +11,7 @@ Die Datenbank wird mit SQLite umgesetzt.
 Anleitung zur Installation und Ausführung:
 
 
+
 Erweiterungen:
 ...
 
