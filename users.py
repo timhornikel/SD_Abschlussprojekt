@@ -35,3 +35,11 @@ class User:
             if passwort_hash == stored_passwort_hash[0]:
                 return True
         return False
+
+    @staticmethod
+    def benutzer_loeschen(benutzername):
+        conn = sqlite3.connect('benutzer.db')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Benutzer WHERE Benutzername=?", (benutzername,))
+        conn.commit()
+        conn.close()

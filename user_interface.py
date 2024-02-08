@@ -1,55 +1,91 @@
 import streamlit as st
 from users import User
 
+# Initialisierung des session_state-Objekts
+if 'state' not in st.session_state:
+    st.session_state.state = 'start'
+    st.session_state.username = ''
+    st.session_state.email = ''
+    st.session_state.password = ''
+    st.session_state.logged_in_user = ''
+
+
 # Startseite
 st.title('Willkommen zu')
 logo = st.image('Abschlussprojekt_Logo.png', width=500)  # Ändere die width nach Bedarf)
 
-# Buttons für Registrieren, Anmelden, Als Gast fortfahren, About und Kontakt
-register_button = st.button('Registrieren', key='register_button')
-login_button = st.button('Anmelden', key='login_button')
-guest_button = st.button('Als Gast fortfahren', key='guest_button')
-about_button = st.button('About', key='about_button')
-contact_button = st.button('Kontakt', key='contact_button')
+# Anzeigen des angemeldeten Benutzers
+if 'logged_in_user' in st.session_state:
+    st.subheader(f'Angemeldet als: {st.session_state.logged_in_user}')
 
 # Überprüfe, welcher Button geklickt wurde
-if register_button:
+if st.session_state.state == 'start':
+    if st.button('Registrieren', key='register_button'):
+        st.session_state.state = 'registration'
+
+    elif st.button('Anmelden', key='login_button'):
+        st.session_state.state = 'login'
+
+    elif st.button('Benutzer löschen', key='delete_button'):
+        st.session_state.state = 'delete_user'
+
+    elif st.button('Als Gast fortfahren', key='guest_button'):
+        st.session_state.state = 'guest'
+    
+    elif st.button('About', key='about_button'):
+        st.session_state.state = 'about'
+    
+    elif st.button('Contact', key='contact_button'):
+        st.session_state.state = 'contact'
+
+
+if st.session_state.logged_in_user:
+    st.write(f'Eingeloggt als: {st.session_state.logged_in_user}')
+
+# Registrierung
+if st.session_state.state == 'registration':
     st.title('Registrierung')
 
-    username = st.text_input('Benutzername')
-    email = st.text_input('E-Mail')
-    password = st.text_input('Passwort', type='password')
+    st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+    st.session_state.email = st.text_input('E-Mail', st.session_state.email)
+    st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
     
     if st.button('Registrieren', key='register_action_button'):
-        # Überprüfe, ob der Benutzer bereits existiert
-        if User.benutzer_existiert(username):
+        if User.benutzer_existiert(st.session_state.username):
             st.error("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.")
         else:
-            # Erstelle ein Benutzerobjekt und speichere es
-            benutzer = User(username, email, password)
+            benutzer = User(st.session_state.username, st.session_state.email, st.session_state.password)
             benutzer.speichern()
-            st.success(f'Benutzer {username} erfolgreich registriert!')
+            st.success(f'Benutzer {st.session_state.username} erfolgreich registriert!')
+            st.session_state.state = 'start'
+            st.session_state.username = ''
+            st.session_state.email = ''
+            st.session_state.password = ''
 
-        # Leite zu neuer Seite weiter
-        st.empty()
-        if st.button('Musik hochladen und registrieren', key='upload_music_button'):
-            st.title('Lied hochladen und registrieren')
-            # Füge den Code für das Hochladen und Registrieren hier ein
 
-elif login_button:
+# Anmeldung
+if st.session_state.state == 'login':
     st.title('Anmeldung')
 
-    username = st.text_input('Benutzername')
-    password = st.text_input('Passwort', type='password')
+    st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+    st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
     
     if st.button('Anmelden', key='login_action_button'):
-        if User.anmelden(username, password):
-            st.success(f'Erfolgreich als {username} angemeldet!')
+        if User.anmelden(st.session_state.username, st.session_state.password):
+            st.success(f'Erfolgreich als {st.session_state.username} angemeldet!')
+            st.session_state.logged_in_user = st.session_state.username  # Den angemeldeten Benutzer festhalten
+            st.session_state.state = 'start'
+            st.session_state.username = ''
+            st.session_state.password = ''
         else:
-            st.error('Ungültige Anmeldeinformationen. Bitte versuche es erneut.')
+            st.error('Falscher Benutzername oder Passwort. Bitte versuche es erneut.')
+    if st.button('zum Hauptmenü zurückgehen', key='login_menu_button'):
+        st.session_state.state = 'start'
+        st.session_state.username = ''
+        st.session_state.password = ''
 
-
-elif guest_button:
+# Als Gast fortsetzen
+if st.session_state.state == 'guest':
     st.title('Als Gast fortfahren')
     # Code für die Gastseite einfügen
 
@@ -64,7 +100,19 @@ if st.button('Musik erkennen'):
     st.title('Lied erkennen')
     # Füge den Code für die Musikerkennung hier ein
 
-elif about_button:
+if st.session_state.state == 'delete_user':
+    st.title('Benutzer löschen')
+
+    username_to_delete = st.text_input('Benutzername des zu löschenden Benutzers')
+    
+    if st.button('Benutzer löschen', key='delete_user_action_button'):
+        if User.benutzer_existiert(username_to_delete):
+            User.benutzer_loeschen(username_to_delete)
+            st.success(f'Benutzer {username_to_delete} erfolgreich gelöscht!')
+        else:
+            st.error('Benutzer existiert nicht.')
+
+if st.session_state.state == 'about':
     st.header('About')
     st.write('Hier findest du eine kurze Beschreibung zur App.')
     st.write('Die App wurde im Rahmen des Abschlussprojekts der Lehrveranstaltung "Softwaredesign" am MCI entwickelt.')
@@ -77,7 +125,7 @@ elif about_button:
     st.write('Schritt 6: Wenn das Lied erkannt wurde, wird der Titel und der Künstler angezeigt.')
     st.write('Viel Spaß beim Nutzen der App!')
 
-elif contact_button:
+if st.session_state.state == 'contact':
     st.header('Kontakt')
     st.write('Falls du Fragen hast, kontaktiere eine Person unseres Support Teams.')
     st.write('Name: Sandra Grüner | E-Mail: s.gruener@mci4me.at')
