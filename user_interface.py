@@ -1,53 +1,53 @@
 import streamlit as st
+from users import User
 
 # Startseite
 st.title('Willkommen zu')
 logo = st.image('Abschlussprojekt_Logo.png', width=500)  # Ändere die width nach Bedarf)
 
 # Buttons für Registrieren, Anmelden, Als Gast fortfahren, About und Kontakt
-register_button = st.button('Registrieren')
-login_button = st.button('Anmelden')
-guest_button = st.button('Als Gast fortfahren')
-about_button = st.button('About')
-contact_button = st.button('Kontakt')
+register_button = st.button('Registrieren', key='register_button')
+login_button = st.button('Anmelden', key='login_button')
+guest_button = st.button('Als Gast fortfahren', key='guest_button')
+about_button = st.button('About', key='about_button')
+contact_button = st.button('Kontakt', key='contact_button')
 
 # Überprüfe, welcher Button geklickt wurde
 if register_button:
     st.title('Registrierung')
 
-    if register_button:
-        username = st.text_input('Benutzername')
-        email = st.text_input('E-Mail')
-        password = st.text_input('Passwort', type='password')
-        
-        if st.button('Registrieren'):
-            # Füge den Code für die Registrierung hier ein
+    username = st.text_input('Benutzername')
+    email = st.text_input('E-Mail')
+    password = st.text_input('Passwort', type='password')
+    
+    if st.button('Registrieren', key='register_action_button'):
+        # Überprüfe, ob der Benutzer bereits existiert
+        if User.benutzer_existiert(username):
+            st.error("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.")
+        else:
+            # Erstelle ein Benutzerobjekt und speichere es
+            benutzer = User(username, email, password)
+            benutzer.speichern()
             st.success(f'Benutzer {username} erfolgreich registriert!')
 
         # Leite zu neuer Seite weiter
         st.empty()
-        if st.button('Musik hochladen und registrieren'):
+        if st.button('Musik hochladen und registrieren', key='upload_music_button'):
             st.title('Lied hochladen und registrieren')
             # Füge den Code für das Hochladen und Registrieren hier ein
 
 elif login_button:
     st.title('Anmeldung')
 
-    if login_button:
-        username = st.text_input('Benutzername')
-        password = st.text_input('Passwort', type='password')
-        
-        if st.button('Anmelden'):
-            # Füge den Code für die Anmeldung hier ein
-            # Beispiel: Überprüfe die Anmeldeinformationen und leite den Benutzer weiter
-            if username == 'demo' and password == 'demo':
-                st.success(f'Erfolgreich als {username} angemeldet!')
-            else:
-                st.error('Ungültige Anmeldeinformationen. Bitte versuche es erneut.')
-        # Leite zu neuer Seite weiter
-        st.empty()
-        if st.button('Musik hochladen und registrieren'):
-            st.title('Lied hochladen und registrieren')
+    username = st.text_input('Benutzername')
+    password = st.text_input('Passwort', type='password')
+    
+    if st.button('Anmelden', key='login_action_button'):
+        if User.anmelden(username, password):
+            st.success(f'Erfolgreich als {username} angemeldet!')
+        else:
+            st.error('Ungültige Anmeldeinformationen. Bitte versuche es erneut.')
+
 
 elif guest_button:
     st.title('Als Gast fortfahren')
