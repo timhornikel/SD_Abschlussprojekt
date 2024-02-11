@@ -1,7 +1,7 @@
 import sqlite3
 
 # Verbindung zur Datenbank herstellen
-conn = sqlite3.connect('benutzer.db')
+conn = sqlite3.connect('musik_recognition.db')
 cursor = conn.cursor()
 
 # Tabelle erstellen, wenn sie nicht existiert
