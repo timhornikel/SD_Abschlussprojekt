@@ -39,7 +39,8 @@ def audio_plot(datei):
 
 
 
-audio_aufnehmen(dateiname='test_1.wav')
-audio_plot('test_1.wav')
+#audio_aufnehmen(dateiname='test_1.wav')
+audio_plot('Songs/CantinaBand3.wav')
+audio_plot('Songs/CantinaBand60.wav')
 
 

@@ -1,17 +1,12 @@
 import sqlite3
 
 # Verbindung zur Datenbank herstellen
-conn = sqlite3.connect('musik_recognition.db')
+conn = sqlite3.connect('music_database.db')
 cursor = conn.cursor()
 
-# Tabelle erstellen, wenn sie nicht existiert
-cursor.execute('''CREATE TABLE IF NOT EXISTS Benutzer (
-                    Benutzername TEXT PRIMARY KEY,
-                    Email TEXT,
-                    PasswortHash TEXT
-                )''')
+# Zeile löschen, wo der Name gleich einem bestimmten Wert ist
+cursor.execute('''DELETE FROM songs WHERE ID = ?''', ('1'))
 
 # Verbindung schließen
+conn.commit()
 conn.close()
-
-print("Datenbank und Tabelle erfolgreich erstellt.")
