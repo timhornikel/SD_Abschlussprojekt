@@ -136,8 +136,13 @@ elif option == 'Musik erkennen':
     if st.session_state.logged_in_user:
         st.title('Musik erkennen')
         st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
-        st.write('Hier können Sie Musik erkennen lassen.')
-        st.write('Code noch nicht implementiert')
+        recognition_option = st.radio("Wählen Sie eine Erkennungsoption:", ["Datei hochladen", "Über Mikrofon erkennen"])
+        if recognition_option == "Datei hochladen":
+            uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
+            if uploaded_file is not None:
+                st.success('Musikdatei erfolgreich hochgeladen!')
+        elif recognition_option == "Über Mikrofon erkennen":
+            st.write("Hier kann die Musik über das Mikrofon erkannt werden.")
     else:
         st.warning("Bitte melden Sie sich zuerst an.")
 
