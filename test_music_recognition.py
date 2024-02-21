@@ -5,7 +5,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 
-def audio_aufnehmen(dauer=10, samplerate=44100, dateiname="aufnahme.wav"):
+def audio_aufnehmen(dauer=10, samplerate=22050, dateiname="aufnahme.wav"):
         print(f"Aufnahme startet für {dauer} Sekunden...")
         audio = sd.rec(int(dauer * samplerate), samplerate=samplerate, channels=1, dtype="float32")
         sd.wait()

@@ -17,13 +17,15 @@ class Lied:
         self.album = album
         self.dateipfad = dateipfad
 
-    def process_audio(self):
+
+    @staticmethod
+    def process_audio(dateipfad):
         '''
         Audio-Datei laden, Spectogramm erstellen und Peaks finden
         '''
 
         # Audiodatei laden und spectogramm erstellen
-        y, sr = librosa.load(self.dateipfad, sr=set.SAMPLE_RATE)  # Setzen der Samplingrate auf den festen Wert
+        y, sr = librosa.load(dateipfad, sr=set.SAMPLE_RATE)  # Setzen der Samplingrate auf den festen Wert
         original_spectogram = librosa.amplitude_to_db(np.abs(librosa.stft(y, n_fft=set.FFT_WINDOW_SIZE)), ref=np.max)
         filtered_spectogram = maximum_filter(original_spectogram, size=(set.PEAK_BOX_SIZE, set.PEAK_BOX_SIZE+5), mode='constant', cval=-np.inf)
 
@@ -63,6 +65,7 @@ class Lied:
         hashes = Lied.create_hashes(peaks_indices, times)
         return fig, peaks_indices, times, hashes
 
+
     @staticmethod
     def create_hashes(peaks_indices, times):
         '''
@@ -93,6 +96,7 @@ class Lied:
                         hashes.append(hash_tuple)
         return hashes
 
+
     def save_to_db(self, hashes):
         '''
         Speichert die Hashes in der MusicRecognition.db SQLite-Datenbank
@@ -115,6 +119,7 @@ class Lied:
         # Verbindung zur Datenbank trennen
         conn.close()
     
+
     def show_plot(self, figure):
         '''
         Zeigt den Plot an
@@ -122,24 +127,41 @@ class Lied:
 
         plt.show()  
 
-    def get_hashes(self):
+
+    @staticmethod
+    def recognise_song(dateipfad):
         '''
-        Holt die Hashes aus der Datenbank
+        Erkennt ein Lied anhand der Hashes in der Datenbank
         '''
+
+        fig, peak_indices, times, hashes = Lied.process_audio(dateipfad)
 
         # Verbindung zur SQLite-Datenbank herstellen
         conn = sqlite3.connect('MusicRecognition.db')
         c = conn.cursor()
 
-        # Hashes aus der Datenbank abfragen
-        c.execute('SELECT * FROM {}_fingerprint'.format(self.titel))
-        hashes = c.fetchall()
+        # Alle Hashes aus der Datenbank abfragen
+        c.execute('SELECT anchor_freq, target_freq, delta_time, anchor_time, title FROM StarWars_fingerprint')
+        all_hashes = c.fetchall()
 
         # Verbindung zur Datenbank trennen
         conn.close()
 
-        return hashes
+        # Erstellen eines leeren Dictionaries für die Übereinstimmungen
+        matches = {}
 
+        hash_matches = [(title, 1) for anchor_freq, target_freq, delta_time, anchor_time, title in all_hashes if any(abs(delta_time - delta) <= 1 and abs(anchor_time - time) <= 1 for anchor, target, delta, time in hashes)]
+        # Die Zeile oben erstellt eine Liste von Tupeln, die den Titel und die Anzahl der Übereinstimmungen enthalten
+        if hash_matches:
+            return max(hash_matches, key=lambda x: x[1])[0]
+        else:
+            return None
+    
+
+
+
+
+        
 if __name__ == '__main__':
     #lied = Lied('Cantina_band', 'Yoda', 'Star_Wars', 'songs/CantinaBand60.wav')
     #fig, peak_indices, times, hashes = lied.process_audio()
@@ -153,4 +175,5 @@ if __name__ == '__main__':
     #print('Lied 2 geladen')
 
     # Liedausschnitt erkennen
-    pass
+    lied = Lied.recognise_song('songs/CantinaBand3.wav')
+    print('Das erkannte Lied ist:', lied)
