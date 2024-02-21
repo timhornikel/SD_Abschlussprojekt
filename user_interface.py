@@ -2,86 +2,164 @@ import streamlit as st
 from users import User
 
 # Initialisierung der Session-Variablen
-if 'logged_in_user' not in st.session_state:
-    st.session_state.logged_in_user = None
 if 'state' not in st.session_state:
-    st.session_state.state = None
+    st.session_state.state = 'start'
+    st.session_state.username = ''
+    st.session_state.email = ''
+    st.session_state.password = ''
+    st.session_state.logged_in_user = None
+    st.session_state.show_about = False
+    st.session_state.show_contact = False
 
-# Seitenüberschrift und Logo
-st.title('Willkommen zu Abschlussprojekt')
-st.image('Abschlussprojekt_Logo_userinterface.png', width=300)
+# Funktion für Benachrichtigungen
+def notify(message, type='info'):
+    if type == 'info':
+        st.sidebar.info(message)
+    elif type == 'success':
+        st.sidebar.success(message)
+    elif type == 'error':
+        st.sidebar.error(message)
 
-# Menü für Aktionen
-action = st.sidebar.radio('Wähle deine Option:', ['Anmelden', 'Registrieren', 'Als Gast anmelden'])
+# Hinweis nach Anmeldung
+def display_login_message():
+    st.sidebar.info("Bitte wählen Sie in der Sidebar nun 'Musik hochladen' oder 'Musik erkennen'.")
 
-# Anmeldeformular
-if action == 'Anmelden':
-    st.header('Anmeldung')
-    username = st.text_input('Benutzername')
-    password = st.text_input('Passwort', type='password')
-    if st.button('Anmelden'):
-        if User.anmelden(username, password):
-            st.session_state.logged_in_user = username
-            st.success(f'Erfolgreich als {username} angemeldet!')
-        else:
-            st.error('Falscher Benutzername oder Passwort. Bitte versuche es erneut.')
+# Abmeldung
+def logout():
+    st.session_state.logged_in_user = None
+    st.session_state.state = 'start'
+    st.session_state.username = ''
+    st.session_state.email = ''
+    st.session_state.password = ''
+    st.session_state.show_about = False
+    st.session_state.show_contact = False
+    st.sidebar.warning("Bitte melden Sie sich an, registrieren Sie sich oder setzen Sie die Sitzung als Gast fort.")
 
-# Registrierungsformular
-elif action == 'Registrieren':
-    st.header('Registrierung')
-    username = st.text_input('Benutzername')
-    email = st.text_input('E-Mail')
-    password = st.text_input('Passwort', type='password')
-    if st.button('Registrieren'):
-        if User.benutzer_existiert(username):
-            st.error("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.")
-        else:
-            benutzer = User(username, email, password)
-            benutzer.speichern()
-            st.success(f'Benutzer {username} erfolgreich registriert!')
+    action = st.radio('Wählen Sie Ihre Option:', ['Anmelden', 'Registrieren', 'Als Gast anmelden'])
 
-# Gastanmeldung
-elif action == 'Als Gast anmelden':
-    st.session_state.logged_in_user = 'Gast'
-    st.success('Erfolgreich als Gast angemeldet!')
+    if action == 'Anmelden':
+        st.title('Anmeldung')
+        st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+        st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
+        
+        if st.button('Anmelden'):
+            if User.anmelden(st.session_state.username, st.session_state.password):
+                st.session_state.logged_in_user = st.session_state.username
+                notify(f'Erfolgreich als {st.session_state.username} angemeldet!', type='success')
+                st.session_state.username = ''
+                st.session_state.password = ''
+                display_login_message()
 
-# Musikfunktionen
-st.markdown("---")
+    elif action == 'Registrieren':
+        st.title('Registrierung')
+        st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+        st.session_state.email = st.text_input('E-Mail', st.session_state.email)
+        st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
+        
+        if st.button('Registrieren'):
+            if User.benutzer_existiert(st.session_state.username):
+                notify("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.", type='error')
+            else:
+                benutzer = User(st.session_state.username, st.session_state.email, st.session_state.password)
+                benutzer.speichern()
+                notify(f'Benutzer {st.session_state.username} erfolgreich registriert!', type='success')
+                st.session_state.username = ''
+                st.session_state.email = ''
+                st.session_state.password = ''
+                display_login_message()
 
-if st.session_state.logged_in_user:
-    st.header('Musikfunktionen')
-    if st.button('Musik hochladen'):
-        st.session_state.state = 'upload_music'
-        st.success('Wähle eine Musikdatei aus und lade sie hoch.')
-    elif st.button('Musik erkennen'):
-        st.session_state.state = 'recognize_music'
-        st.info('Wähle eine Musikdatei aus und lass sie erkennen.')
+    elif action == 'Als Gast anmelden':
+        st.session_state.logged_in_user = 'Gast'
+        notify('Erfolgreich als Gast angemeldet!', type='success')
+        display_login_message()
 
-    if st.session_state.state == 'upload_music':
-        uploaded_file = st.file_uploader("Wähle eine Musikdatei aus", type=["mp3", "wav"])
+# Sidebar
+st.sidebar.image('Abschlussprojekt_Logo_userinterface.png', width=200)
+st.sidebar.title('Wählen Sie aus')
+option = st.sidebar.radio('Navigation', ['Nutzermanagement', 'Musik hochladen', 'Musik erkennen', 'About', 'Kontakt', 'Abmelden'])
+
+# Startseite
+if option == 'Nutzermanagement':
+    if st.session_state.logged_in_user is None:
+        st.sidebar.warning('Bitte melden Sie sich an, registrieren Sie sich oder setzen Sie die Sitzung als Gast fort.')
+
+        action = st.radio('Wählen Sie Ihre Option:', ['Anmelden', 'Registrieren', 'Als Gast anmelden'])
+
+        if action == 'Anmelden':
+            st.title('Anmeldung')
+            st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+            st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
+            
+            if st.button('Anmelden'):
+                if User.anmelden(st.session_state.username, st.session_state.password):
+                    st.session_state.logged_in_user = st.session_state.username
+                    notify(f'Erfolgreich als {st.session_state.username} angemeldet!', type='success')
+                    st.session_state.username = ''
+                    st.session_state.password = ''
+                    display_login_message()
+
+        elif action == 'Registrieren':
+            st.title('Registrierung')
+            st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+            st.session_state.email = st.text_input('E-Mail', st.session_state.email)
+            st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
+            
+            if st.button('Registrieren'):
+                if User.benutzer_existiert(st.session_state.username):
+                    notify("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.", type='error')
+                else:
+                    benutzer = User(st.session_state.username, st.session_state.email, st.session_state.password)
+                    benutzer.speichern()
+                    notify(f'Benutzer {st.session_state.username} erfolgreich registriert!', type='success')
+                    st.session_state.username = ''
+                    st.session_state.email = ''
+                    st.session_state.password = ''
+                    display_login_message()
+
+        elif action == 'Als Gast anmelden':
+            st.session_state.logged_in_user = 'Gast'
+            notify('Erfolgreich als Gast angemeldet!', type='success')
+            display_login_message()
+
+# Musikseite
+elif option == 'Musik hochladen':
+    if st.session_state.logged_in_user:
+        st.title('Musik hochladen')
+        st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
+        uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
         if uploaded_file is not None:
             st.success('Musikdatei erfolgreich hochgeladen!')
+    else:
+        st.warning("Bitte melden Sie sich zuerst an.")
 
-    elif st.session_state.state == 'recognize_music':
+elif option == 'Musik erkennen':
+    if st.session_state.logged_in_user:
+        st.title('Musik erkennen')
+        st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         st.write('Hier können Sie Musik erkennen lassen.')
-        st.write('Code für Musikerkennung muss noch implementiert werden.')
+        st.write('Code noch nicht implementiert')
+    else:
+        st.warning("Bitte melden Sie sich zuerst an.")
 
 # About und Kontakt
-st.markdown("---")
-
-if st.button('About'):
-    st.write('Hier findest du eine kurze Beschreibung zur App.')
+elif option == 'About':
+    st.title('About')
+    st.write('Hier finden Sie eine kurze Beschreibung zur App.')
     st.write('Die App wurde im Rahmen des Abschlussprojekts der Lehrveranstaltung "Softwaredesign" am MCI entwickelt.')
-    st.write('Die App ermöglicht es, dass sich Nutzer registrieren, anmelden oder als Gast fortfahren können.')
-    st.write('Schritt 1: Fahre als Gast fort oder melde dich an. Wenn du noch keinen Account hast, registriere dich.')
-    st.write('Schritt 2: Wähle aus ob du ein Lied hochladen möchtest oder ein Lied erkennen möchtest.')
-    st.write('Schritt 3: Um ein Lied hochzuladen, klicke auf "Lied hochladen" und wähle das Lied aus.')
-    st.write('Schritt 4: Wenn das Lied hochgeladen wurde, gib den Titel und den Künstler ein und klicke auf "Lied registrieren".')
-    st.write('Schritt 5: Um ein Lied zu erkennen, klicke auf "Lied erkennen" und wähle das Lied aus.')
+    st.write('Die App ermöglicht es, dass sich Nutzer registrieren, anmelden oder als Gast fortsetzen können.')
+    st.write('Schritt 1: Fahren Sie als Gast fort oder melden Sie sich an. Wenn Sie noch keinen Account haben, registrieren Sie sich.')
+    st.write('Schritt 2: Wählen Sie aus, ob Sie ein Lied hochladen möchten oder ein Lied erkennen möchten.')
+    st.write('Schritt 3: Um ein Lied hochzuladen, klicken Sie auf "Lied hochladen" und wählen Sie das Lied aus.')
+    st.write('Schritt 4: Wenn das Lied hochgeladen wurde, geben Sie den Titel und den Künstler ein und klicken Sie auf "Lied registrieren".')
+    st.write('Schritt 5: Um ein Lied zu erkennen, klicken Sie auf "Lied erkennen" und wählen Sie das Lied aus.')
     st.write('Schritt 6: Wenn das Lied erkannt wurde, wird der Titel und der Künstler angezeigt.')
 
-if st.button('Kontakt'):
-    st.write('Falls du Fragen hast, kontaktiere eine Person unseres Support Teams.')
+elif option == 'Kontakt':
+    st.title('Kontakt')
+    st.write('Wenn Sie Fragen haben, kontaktieren Sie bitte eine Person aus unserem Support-Team.')
     st.write('Name: Sandra Grüner | E-Mail: s.gruener@mci4me.at')
     st.write('Name: Tim Hornikel | E-Mail: t.hornikel@mci4me.at')
     st.write('Name: Oskar Klöpfer | E-Mail: o.kloepfer@mci4me.at')
+
+elif option == 'Abmelden':
+    logout()
