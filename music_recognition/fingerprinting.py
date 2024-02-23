@@ -6,20 +6,20 @@ from scipy.signal import spectrogram
 from scipy.ndimage import maximum_filter
 
 
-def my_spectrogram(audio):
+def generate_spectogram(audio):
     """Generates a spectrogram from audio."""
     nperseg = int(settings.SAMPLE_RATE * settings.FFT_WINDOW_SIZE)
     return spectrogram(audio, settings.SAMPLE_RATE, nperseg=nperseg)
 
 
-def file_to_spectrogram(filename):
+def convert_file_to_spectogram(filename):
     """Converts a file to a spectrogram."""
     a = AudioSegment.from_file(filename).set_channels(1).set_frame_rate(settings.SAMPLE_RATE)
     audio = np.frombuffer(a.raw_data, np.int16)
-    return my_spectrogram(audio)
+    return generate_spectogram(audio)
 
 
-def find_peaks(Sxx):
+def get_peaks(Sxx):
     """Finds peaks in a spectrogram."""
     data_max = maximum_filter(Sxx, size=settings.PEAK_BOX_SIZE, mode='constant', cval=0.0)
     peak_goodmask = (Sxx == data_max)
@@ -37,12 +37,12 @@ def idxs_to_tf_pairs(idxs, t, f):
     return np.array([(f[i[0]], t[i[1]]) for i in idxs])
 
 
-def hash_point_pair(p1, p2):
+def generate_hash_point_pair(p1, p2):
     """Generates a hash from a pair of points."""
     return hash((p1[0], p2[0], p2[1]-p2[1]))
 
 
-def target_zone(anchor, points, width, height, t):
+def generate_target_zone(anchor, points, width, height, t):
     """Generates the target zone for a peak."""
     x_min = anchor[1] + t
     x_max = x_min + width
@@ -56,16 +56,16 @@ def target_zone(anchor, points, width, height, t):
         yield point
 
 
-def hash_points(points, filename):
+def generate_hash_points(points, filename):
     """Generates hashes from a list of points."""
     hashes = []
     song_id = uuid.uuid5(uuid.NAMESPACE_OID, filename).int
     for anchor in points:
-        for target in target_zone(
+        for target in generate_target_zone(
             anchor, points, settings.TARGET_T, settings.TARGET_F, settings.TARGET_START
         ):
             hashes.append((
-                hash_point_pair(anchor, target),
+                generate_hash_point_pair(anchor, target),
                 anchor[1],
                 str(song_id)
             ))
@@ -74,15 +74,15 @@ def hash_points(points, filename):
 
 def fingerprint_file(filename):
     """Generate hashes for an audio file."""
-    f, t, Sxx = file_to_spectrogram(filename)
-    peaks = find_peaks(Sxx)
+    f, t, Sxx = convert_file_to_spectogram(filename)
+    peaks = get_peaks(Sxx)
     peaks = idxs_to_tf_pairs(peaks, t, f)
-    return hash_points(peaks, filename)
+    return generate_hash_points(peaks, filename)
 
 
 def fingerprint_audio(frames):
     """Generate hashes for audio frames."""
-    f, t, Sxx = my_spectrogram(frames)
-    peaks = find_peaks(Sxx)
+    f, t, Sxx = generate_spectogram(frames)
+    peaks = get_peaks(Sxx)
     peaks = idxs_to_tf_pairs(peaks, t, f)
-    return hash_points(peaks, "recorded")
+    return generate_hash_points(peaks, "recorded")

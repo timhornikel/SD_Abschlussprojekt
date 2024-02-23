@@ -1,5 +1,7 @@
 import streamlit as st
 from user.users import User
+import music_recognition.recognise as mr
+import music_recognition.storage as ms
 
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:
@@ -128,6 +130,7 @@ elif option == 'Musik hochladen':
         st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
         if uploaded_file is not None:
+
             st.success('Musikdatei erfolgreich hochgeladen!')
     else:
         st.warning("Bitte melden Sie sich zuerst an.")

@@ -1,17 +1,5 @@
-import sqlite3
+import music_recognition.storage as ms
 
-# Verbindung zur Datenbank herstellen
-conn = sqlite3.connect('musik_recognition.db')
-cursor = conn.cursor()
-
-# Tabelle erstellen, wenn sie nicht existiert
-cursor.execute('''CREATE TABLE IF NOT EXISTS Benutzer (
-                    Benutzername TEXT PRIMARY KEY,
-                    Email TEXT,
-                    PasswortHash TEXT
-                )''')
-
-# Verbindung schließen
-conn.close()
-
-print("Datenbank und Tabelle erfolgreich erstellt.")
+print("Setting up database...")
+ms.setup_db()
+print("Database setup complete.")

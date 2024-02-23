@@ -7,9 +7,13 @@ import numpy as np
 CHUNK = 1024
 """The number of frames to read at a time."""
 FORMAT = pyaudio.paInt16
+"""Format of the audio stream."""
 CHANNELS = 1
+"""Number of audio channels."""
 RATE = 22050
+"""Sample rate of the audio stream."""
 RECORD_SECONDS = 5
+"""The number of seconds to record for."""
 SAVE_DIRECTORY = "test_songs/"
 """The directory to save recordings to."""
 
@@ -73,7 +77,6 @@ class RecordThread(threading.Thread):
         for f in os.listdir(SAVE_DIRECTORY):
             if self.base_filename not in f:
                 continue
-            # <filename><num>.wav
             num = int(f.split(".")[0][len(self.base_filename):])
             if num >= file_num:
                 file_num = num + 1

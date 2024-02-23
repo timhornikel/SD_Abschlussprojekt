@@ -2,7 +2,7 @@ import uuid
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
-from . import settings
+import settings
 
 
 @contextmanager
@@ -41,9 +41,6 @@ def song_in_db(filename):
 def store_song(hashes, song_info):
     """Store a song in the database."""
     if len(hashes) < 1:
-        # TODO: After experiments have run, change this to raise error
-        # Probably should re-run the peaks finding with higher efficiency
-        # or maybe widen the target zone
         return
     with get_cursor() as (conn, c):
         c.executemany("INSERT INTO hash VALUES (?, ?, ?)", hashes)
