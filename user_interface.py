@@ -1,5 +1,5 @@
 import streamlit as st
-from users import User
+from user.users import User
 
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:
@@ -74,7 +74,7 @@ def logout():
         display_login_message()
 
 # Sidebar
-st.sidebar.image('Abschlussprojekt_Logo_userinterface.png', width=200)
+st.sidebar.image('pictures/Abschlussprojekt_Logo_userinterface.png', width=200)
 st.sidebar.title('Wählen Sie aus')
 option = st.sidebar.radio('Navigation', ['Nutzermanagement', 'Musik hochladen', 'Musik erkennen', 'About', 'Kontakt', 'Abmelden'])
 
