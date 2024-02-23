@@ -3,7 +3,7 @@ import logging
 from multiprocessing import Pool, Lock, current_process
 import numpy as np
 from tinytag import TinyTag
-from . import settings
+import setting
 from record import record_audio
 from fingerprinting import fingerprint_file, fingerprint_audio
 from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db
@@ -52,7 +52,7 @@ def register_directory(path):
             file_path = os.path.join(path, root, f)
             to_register.append(file_path)
     l = Lock()
-    with Pool(settings.NUM_WORKERS, initializer=pool_init, initargs=(l,)) as p:
+    with Pool(setting.NUM_WORKERS, initializer=pool_init, initargs=(l,)) as p:
         p.map(register_song, to_register)
     # speed up future reads
     checkpoint_db()
@@ -76,7 +76,6 @@ def best_match(matches):
     best_score = 0
     for song_id, offsets in matches.items():
         if len(offsets) < best_score:
-            # can't be best score, avoid expensive histogram
             continue
         score = score_match(offsets)
         if score > best_score:
@@ -106,3 +105,7 @@ def listen_to_song(filename=None):
     if info is not None:
         return info
     return matched_song
+
+if __name__ == "__name__":
+    register_song("../StarWars60.wav")
+    print(recognise_song("../StarWars3.wav"))

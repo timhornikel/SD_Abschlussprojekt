@@ -2,14 +2,15 @@ import uuid
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
-import settings
+import music_recognition.setting as setting
+import setting
 
 
 @contextmanager
 def get_cursor():
     """Get a cursor for the database."""
     try:
-        conn = sqlite3.connect(settings.DB_PATH, timeout=30)
+        conn = sqlite3.connect(setting.DB_PATH, timeout=30)
         yield conn, conn.cursor()
     finally:
         conn.close()

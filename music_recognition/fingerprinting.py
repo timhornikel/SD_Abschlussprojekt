@@ -1,34 +1,35 @@
 import uuid
 import numpy as np
-from .. import settings
+import music_recognition.setting as setting
 from pydub import AudioSegment
 from scipy.signal import spectrogram
 from scipy.ndimage import maximum_filter
+import setting
 
 
 def generate_spectogram(audio):
     """Generates a spectrogram from audio."""
-    nperseg = int(settings.SAMPLE_RATE * settings.FFT_WINDOW_SIZE)
-    return spectrogram(audio, settings.SAMPLE_RATE, nperseg=nperseg)
+    nperseg = int(setting.SAMPLE_RATE * setting.FFT_WINDOW_SIZE)
+    return spectrogram(audio, setting.SAMPLE_RATE, nperseg=nperseg)
 
 
 def convert_file_to_spectogram(filename):
     """Converts a file to a spectrogram."""
-    a = AudioSegment.from_file(filename).set_channels(1).set_frame_rate(settings.SAMPLE_RATE)
+    a = AudioSegment.from_file(filename).set_channels(1).set_frame_rate(setting.SAMPLE_RATE)
     audio = np.frombuffer(a.raw_data, np.int16)
     return generate_spectogram(audio)
 
 
 def get_peaks(Sxx):
     """Finds peaks in a spectrogram."""
-    data_max = maximum_filter(Sxx, size=settings.PEAK_BOX_SIZE, mode='constant', cval=0.0)
+    data_max = maximum_filter(Sxx, size=setting.PEAK_BOX_SIZE, mode='constant', cval=0.0)
     peak_goodmask = (Sxx == data_max)
     y_peaks, x_peaks = peak_goodmask.nonzero()
     peak_values = Sxx[y_peaks, x_peaks]
     i = peak_values.argsort()[::-1]
     j = [(y_peaks[idx], x_peaks[idx]) for idx in i]
     total = Sxx.shape[0] * Sxx.shape[1]
-    peak_target = int((total / (settings.PEAK_BOX_SIZE**2)) * settings.POINT_EFFICIENCY)
+    peak_target = int((total / (setting.PEAK_BOX_SIZE**2)) * setting.POINT_EFFICIENCY)
     return j[:peak_target]
 
 
@@ -62,7 +63,7 @@ def generate_hash_points(points, filename):
     song_id = uuid.uuid5(uuid.NAMESPACE_OID, filename).int
     for anchor in points:
         for target in generate_target_zone(
-            anchor, points, settings.TARGET_T, settings.TARGET_F, settings.TARGET_START
+            anchor, points, setting.TARGET_T, setting.TARGET_F, setting.TARGET_START
         ):
             hashes.append((
                 generate_hash_point_pair(anchor, target),
