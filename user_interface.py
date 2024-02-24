@@ -1,6 +1,6 @@
 import streamlit as st
 from user.users import User
-import music_recognition.recognise as mr
+import recognise as mr
 
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:

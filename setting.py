@@ -24,3 +24,9 @@ DB_PATH = "music_recognition.db"
 
 NUM_WORKERS = 24
 """The number of workers to use when registering songs."""
+
+def test():
+    print('Im setting.py')
+
+if __name__ == "__main__":
+    print('Im module setting')

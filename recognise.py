@@ -3,10 +3,10 @@ import logging
 from multiprocessing import Pool, Lock, current_process
 import numpy as np
 from tinytag import TinyTag
-import setting
 from record import record_audio
 from fingerprinting import fingerprint_file, fingerprint_audio
 from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db
+import setting
 
 KNOWN_EXTENSIONS = ["mp3", "wav", "flac", "m4a"]
 
@@ -105,7 +105,3 @@ def listen_to_song(filename=None):
     if info is not None:
         return info
     return matched_song
-
-if __name__ == "__name__":
-    register_song("../StarWars60.wav")
-    print(recognise_song("../StarWars3.wav"))

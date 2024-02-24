@@ -2,7 +2,6 @@ import uuid
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
-import music_recognition.setting as setting
 import setting
 
 

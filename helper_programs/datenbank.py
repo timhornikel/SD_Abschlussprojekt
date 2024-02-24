@@ -1,4 +1,4 @@
-import music_recognition.storage as ms
+import storage as ms
 
 print("Setting up database...")
 ms.setup_db()

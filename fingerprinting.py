@@ -1,6 +1,5 @@
 import uuid
 import numpy as np
-import music_recognition.setting as setting
 from pydub import AudioSegment
 from scipy.signal import spectrogram
 from scipy.ndimage import maximum_filter
