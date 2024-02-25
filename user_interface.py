@@ -159,12 +159,14 @@ elif option == 'Musik erkennen':
             try:
                 if st.button('Starten'):
                     song = mr.listen_to_song()
+                    st.divider()
                     st.header("Erkannter Song")
                     st.write(f"Der erkannte song: {song[2]} aus dem Ablum: {song[1]} von {song[0]} wurde erkannt.")
                     youtuba_link = mr.get_youtube_search_url(song[2], song[0])
                     spotify_link = mr.get_spotify_search_url(song[2], song[0])
                     st.link_button(url=youtuba_link, label='Öffne YouTube Video')
                     st.link_button(url=spotify_link, label='Öffne Spotify Lied')
+                    st.divider()
                     st.header("Song History")
                     history = mr.display_song_history()
                     st.dataframe(history)              
