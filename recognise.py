@@ -111,17 +111,19 @@ def listen_to_song(filename=None):
 
 if __name__ == "__main__":
     pass
-    path = "song/StarWars60.wav"
-    path2 = "song/CantinaBand60.wav"
-    register_song(path, "John Williams", "Star Wars", "Main Title")
-    register_song(path2, "John Williams", "Star Wars", "Cantina Band")
-    print()
+    #path = "song/StarWars60.wav"
+    #path2 = "song/CantinaBand60.wav"
+    #register_song(path, "John Williams", "Star Wars", "Main Title")
+    #register_song(path2, "John Williams", "Star Wars", "Cantina Band")
+    #print()
 
 
-    path3 = "song/StarWars3.wav"
-    path4 = "song/CantinaBand3.wav"
-    song = recognise_song(path3)
-    print(f"Recognised Song 1 title: {song[2]}, from the album {song[1]} by {song[0]}")
-    print()
-    song2 = recognise_song(path4)
-    print(f"Recognised Song 2 title: {song2[2]}, from the album {song2[1]} by {song2[0]}")
+    #path3 = "song/StarWars3.wav"
+    #path4 = "song/CantinaBand3.wav"
+    #song = recognise_song(path3)
+    #print(f"Recognised Song 1 title: {song[2]}, from the album {song[1]} by {song[0]}")
+    #print()
+    #song2 = recognise_song(path4)
+    #print(f"Recognised Song 2 title: {song2[2]}, from the album {song2[1]} by {song2[0]}")
+    #song3 = listen_to_song()
+    #print(f"Recognised Song 3 title: {song3[2]}, from the album {song3[1]} by {song3[0]}")

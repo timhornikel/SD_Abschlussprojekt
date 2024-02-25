@@ -133,8 +133,9 @@ elif option == 'Musik hochladen':
                 title = st.text_input('Titel')
                 artist = st.text_input('Künstler')
                 album = st.text_input('Album')
-                mr.register_song(uploaded_file, artist, album, title)
-                st.success('Musikdatei erfolgreich hochgeladen!')
+                if st.button('Hochladen'):
+                    mr.register_song(uploaded_file, artist, album, title)
+                    st.success('Musikdatei erfolgreich hochgeladen!')
             except Exception as e:
                 st.error(f'Fehler beim Hochladen der Musikdatei: {e}')
     else:
@@ -155,8 +156,9 @@ elif option == 'Musik erkennen':
                     st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
         elif recognition_option == "Über Mikrofon erkennen":
             try:
-                mr.listen_to_song()
-                st.write("Hier kann die Musik über das Mikrofon erkannt werden.")
+                if st.button('Starten'):
+                    song = mr.listen_to_song()
+                    st.write(f"Der erkannte song: {song[2]} aus dem Ablum: {song[1]} von {song[0]} wurde erkannt.")
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:
