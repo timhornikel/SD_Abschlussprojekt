@@ -1,13 +1,10 @@
 import sqlite3
 
-conn = sqlite3.connect('benutzer.db')
+conn = sqlite3.connect('music_recognition.db')
 cursor = conn.cursor()
 
 # Tabelle erstellen, wenn sie noch nicht existiert
-cursor.execute('''CREATE TABLE IF NOT EXISTS Benutzer (
-                  Benutzername TEXT PRIMARY KEY,
-                  Email TEXT,
-                  PasswortHash TEXT)''')
+cursor.execute(""" DROP TABLE IF EXISTS sqlite_sequence; """)
 
 conn.commit()
 conn.close()

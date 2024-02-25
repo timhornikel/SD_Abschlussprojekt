@@ -5,18 +5,11 @@ import numpy as np
 from tinytag import TinyTag
 from record import record_audio
 from fingerprinting import fingerprint_file, fingerprint_audio
-from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db
+from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db, get_song_history, save_song_history
 import setting
+import pandas as pd
 
 KNOWN_EXTENSIONS = ["mp3", "wav", "flac", "m4a"]
-
-
-# Wird nicht verwendet
-def get_song_info(filename):
-    """Get song info from a file."""
-    tag = TinyTag.get(filename)
-    artist = tag.artist if tag.albumartist is None else tag.albumartist
-    return (artist, tag.album, tag.title)
 
 
 def register_song(filename, artist, album, title):
@@ -92,6 +85,7 @@ def recognise_song(filename):
     matches = get_matches(hashes)
     matched_song = best_match(matches)
     info = get_info_for_song_id(matched_song)
+    save_song_history(info[2], info[1], info[0])
     if info is not None:
         return info
     return matched_song
@@ -104,30 +98,38 @@ def listen_to_song(filename=None):
     matches = get_matches(hashes)
     matched_song = best_match(matches)
     info = get_info_for_song_id(matched_song)
+    save_song_history(info[2], info[1], info[0])
     if info is not None:
         return info
     return matched_song
 
 
+def display_song_history():
+    """Get the song history from the database."""
+    history = get_song_history()
+    df = pd.DataFrame(history, columns=["artist", "album", "title"])
+    if df.empty:
+        return "No song history"
+    else:
+        return df
+
+
+def get_youtube_search_url(name, artist):
+    """Get the youtube search link for a song."""
+    youtube_search_url = f'https://www.youtube.com/results?search_query={name} {artist}'
+    return youtube_search_url
+
+
+def get_spotify_search_url(name, artist):
+    """Get the spotify search link for a song."""
+    spotify_search_url = f'https://open.spotify.com/search/{name} {artist}'
+    return spotify_search_url
+
+
+
 if __name__ == "__main__":
     pass
-    #path = "song/StarWars60.wav"
-    #path2 = "song/CantinaBand60.wav"
-    #register_song(path, "John Williams", "Star Wars", "Main Title")
-    #register_song(path2, "John Williams", "Star Wars", "Cantina Band")
-    #print()
-    seeed = "song/SEEED-Hale-Bopp.wav"
-    song = register_song(seeed, "SEEED", "Hale-Bopp", "Hale-Bopp")
-    recognised_song = recognise_song(seeed)
-    print(f"Recognised Song title: {recognised_song[2]}, from the album {recognised_song[1]} by {recognised_song[0]}")
-
-
-    #path3 = "song/StarWars3.wav"
-    #path4 = "song/CantinaBand3.wav"
-    #song = recognise_song(path3)
-    #print(f"Recognised Song 1 title: {song[2]}, from the album {song[1]} by {song[0]}")
-    #print()
-    #song2 = recognise_song(path4)
-    #print(f"Recognised Song 2 title: {song2[2]}, from the album {song2[1]} by {song2[0]}")
-    #song3 = listen_to_song()
-    #print(f"Recognised Song 3 title: {song3[2]}, from the album {song3[1]} by {song3[0]}")
+    path = "song/Desachantee.wav"
+    register_song(path, "Kate Ryan", "Desachantée", "Desachantée")
+    print(recognise_song(path))
+    
