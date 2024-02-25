@@ -19,14 +19,6 @@ def get_album_cover(song_title, artist):
     else:
         return None
 
-    
-def get_youtube_link(name, artist):
-    # YouTube Suchanfrage
-    youtube_search_url = f'https://www.youtube.com/results?search_query={name} {artist}'
-    return youtube_search_url
 
-
-def get_spotify_search_url(name, artist):
-    # Spotify Suchanfrage
-    spotify_search_url = f'https://open.spotify.com/search/{name} {artist}'
-    return spotify_search_url
+if __name__ == '__main__':
+    pass

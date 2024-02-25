@@ -3,7 +3,7 @@ import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
 import setting
-
+import pandas as pd
 
 @contextmanager
 def get_cursor():
@@ -20,9 +20,29 @@ def setup_db():
     with get_cursor() as (conn, c):
         c.execute("CREATE TABLE IF NOT EXISTS hash (hash int, offset real, song_id text)")
         c.execute("CREATE TABLE IF NOT EXISTS song_info (artist text, album text, title text, song_id text)")
+        c.execute("CREATE TABLE IF NOT EXISTS song_history (Id INTEGER PRIMARY KEY AUTOINCREMENT, title text, album text, artist text)")
         c.execute("CREATE INDEX IF NOT EXISTS idx_hash ON hash (hash)")
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("PRAGMA wal_autocheckpoint=300")
+
+def delete_table(table_name):
+    """delete a table from the database"""
+    with get_cursor() as (conn, c):
+        c.execute(f"DROP TABLE IF EXISTS {table_name}")    
+
+
+def get_song_history():
+    """get the last 5 songs recognised"""
+    with get_cursor() as (conn, c):
+        c.execute("SELECT title, album, artist FROM song_history ORDER BY Id DESC LIMIT 5")
+        return c.fetchall()
+
+
+def save_song_history(title, album, artist):
+    """save a song in the database in song_history table"""
+    with get_cursor() as (conn, c):
+        c.execute("INSERT INTO song_history (title, album, artist) VALUES (?, ?, ?)", (title, album, artist))
+        conn.commit()
 
 
 def checkpoint_db():
@@ -69,3 +89,9 @@ def get_info_for_song_id(song_id):
     with get_cursor() as (conn, c):
         c.execute("SELECT artist, album, title FROM song_info WHERE song_id = ?", (song_id,))
         return c.fetchone()
+    
+
+
+if __name__ == "__main__":
+    #setup_db()
+    pass

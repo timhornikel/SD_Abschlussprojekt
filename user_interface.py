@@ -159,16 +159,15 @@ elif option == 'Musik erkennen':
             try:
                 if st.button('Starten'):
                     song = mr.listen_to_song()
+                    st.header("Erkannter Song")
                     st.write(f"Der erkannte song: {song[2]} aus dem Ablum: {song[1]} von {song[0]} wurde erkannt.")
-                    youtuba_link = links.get_youtube_link(song[2], song[0])
-                    spotify_link = links.get_spotify_search_url(song[2], song[0])
+                    youtuba_link = mr.get_youtube_search_url(song[2], song[0])
+                    spotify_link = mr.get_spotify_search_url(song[2], song[0])
                     st.link_button(url=youtuba_link, label='Öffne YouTube Video')
                     st.link_button(url=spotify_link, label='Öffne Spotify Lied')
-                    bild = links.get_album_cover(song[2], song[0])
-                    try:
-                        st.image(bild, caption=f"{song[2]} - {song[0]}", use_column_width=True)
-                    except:
-                        st.warning("Es konnte kein Albumcover gefunden werden.")
+                    st.header("Song History")
+                    history = mr.display_song_history()
+                    st.dataframe(history)              
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:

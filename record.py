@@ -12,7 +12,7 @@ CHANNELS = 1
 """Number of audio channels."""
 RATE = 22050
 """Sample rate of the audio stream."""
-RECORD_SECONDS = 5
+RECORD_SECONDS = 8
 """The number of seconds to record for."""
 SAVE_DIRECTORY = "test_songs/"
 """The directory to save recordings to."""
