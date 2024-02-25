@@ -116,6 +116,10 @@ if __name__ == "__main__":
     #register_song(path, "John Williams", "Star Wars", "Main Title")
     #register_song(path2, "John Williams", "Star Wars", "Cantina Band")
     #print()
+    seeed = "song/SEEED-Hale-Bopp.wav"
+    song = register_song(seeed, "SEEED", "Hale-Bopp", "Hale-Bopp")
+    recognised_song = recognise_song(seeed)
+    print(f"Recognised Song title: {recognised_song[2]}, from the album {recognised_song[1]} by {recognised_song[0]}")
 
 
     #path3 = "song/StarWars3.wav"
