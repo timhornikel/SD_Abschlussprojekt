@@ -4,7 +4,7 @@ from multiprocessing import Pool, Lock, current_process
 import numpy as np
 from tinytag import TinyTag
 from record import record_audio
-from fingerprinting import fingerprint_file, fingerprint_audio
+from fingerprinting import fingerprint_file, fingerprint_audio, generate_spectogram
 from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db, get_song_history, save_song_history
 import setting
 import pandas as pd
@@ -97,11 +97,18 @@ def listen_to_song(filename=None):
     hashes = fingerprint_audio(audio)
     matches = get_matches(hashes)
     matched_song = best_match(matches)
+    spectogram = generate_spectogram(audio)
     info = get_info_for_song_id(matched_song)
     save_song_history(info[2], info[1], info[0])
     if info is not None:
-        return info
+        return info, spectogram
     return matched_song
+
+
+def display_spectogram_of_song(audio):
+    """Display the spectogram of a song."""
+    spectogram = generate_spectogram(audio)
+    return spectogram
 
 
 def display_song_history():
@@ -129,7 +136,10 @@ def get_spotify_search_url(name, artist):
 
 if __name__ == "__main__":
     pass
-    path = "song/Desachantee.wav"
-    register_song(path, "Kate Ryan", "Desachantée", "Desachantée")
-    print(recognise_song(path))
+    #path = "song/Phlying_6020.wav"
+    #register_song(path, "Lil Kiddo from 6020", "6020 Mixtape", "Phlying 6020")
+    print()
+    path = "6020.wav"
+    recognised_song = recognise_song(path)
+    print(recognised_song)
     
