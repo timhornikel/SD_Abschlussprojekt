@@ -17,13 +17,13 @@ def notify(message, type='info'):
     if type == 'info':
         st.sidebar.info(message)
     elif type == 'success':
-        st.sidebar.success(message)
+        st.success(message)
     elif type == 'error':
         st.sidebar.error(message)
 
 # Hinweis nach Anmeldung
 def display_login_message():
-    st.sidebar.info("Bitte wählen Sie in der Sidebar nun 'Musik hochladen' oder 'Musik erkennen'.")
+    st.info("Bitte wählen Sie in der Sidebar nun 'Musik hochladen' oder 'Musik erkennen'.")
 
 # Abmeldung
 def logout():
@@ -129,8 +129,14 @@ elif option == 'Musik hochladen':
         st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
         if uploaded_file is not None:
-            mr.register_song(uploaded_file)
-            st.success('Musikdatei erfolgreich hochgeladen!')
+            try:
+                title = st.text_input('Titel')
+                artist = st.text_input('Künstler')
+                album = st.text_input('Album')
+                mr.register_song(uploaded_file, artist, album, title)
+                st.success('Musikdatei erfolgreich hochgeladen!')
+            except Exception as e:
+                st.error(f'Fehler beim Hochladen der Musikdatei: {e}')
     else:
         st.warning("Bitte melden Sie sich zuerst an.")
 
@@ -142,33 +148,52 @@ elif option == 'Musik erkennen':
         if recognition_option == "Datei hochladen":
             uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
             if uploaded_file is not None:
-                mr.recognise_song(uploaded_file)
-                st.success('Musikdatei erfolgreich hochgeladen!')
+                try:
+                    song = mr.recognise_song(uploaded_file)
+                    st.write(f"Titel: {song[2]}, Album: {song[1]}, Künstler: {song[0]}")
+                except Exception as e:
+                    st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
         elif recognition_option == "Über Mikrofon erkennen":
-            mr.listen_to_song()
-            st.write("Hier kann die Musik über das Mikrofon erkannt werden.")
+            try:
+                mr.listen_to_song()
+                st.write("Hier kann die Musik über das Mikrofon erkannt werden.")
+            except Exception as e:
+                st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:
         st.warning("Bitte melden Sie sich zuerst an.")
 
 # About und Kontakt
 elif option == 'About':
     st.title('About')
-    st.write('Hier finden Sie eine kurze Beschreibung zur App.')
-    st.write('Die App wurde im Rahmen des Abschlussprojekts der Lehrveranstaltung "Softwaredesign" am MCI entwickelt.')
-    st.write('Die App ermöglicht es, dass sich Nutzer registrieren, anmelden oder als Gast fortsetzen können.')
-    st.write('Schritt 1: Fahren Sie als Gast fort oder melden Sie sich an. Wenn Sie noch keinen Account haben, registrieren Sie sich.')
-    st.write('Schritt 2: Wählen Sie aus, ob Sie ein Lied hochladen möchten oder ein Lied erkennen möchten.')
-    st.write('Schritt 3: Um ein Lied hochzuladen, klicken Sie auf "Lied hochladen" und wählen Sie das Lied aus.')
-    st.write('Schritt 4: Wenn das Lied hochgeladen wurde, geben Sie den Titel und den Künstler ein und klicken Sie auf "Lied registrieren".')
-    st.write('Schritt 5: Um ein Lied zu erkennen, klicken Sie auf "Lied erkennen" und wählen Sie das Lied aus.')
-    st.write('Schritt 6: Wenn das Lied erkannt wurde, wird der Titel und der Künstler angezeigt.')
+    st.markdown(
+        """
+        <div>
+          <p>Hier finden Sie eine kurze Beschreibung zur App.</p>
+          <p>Die App wurde im Rahmen des Abschlussprojekts der Lehrveranstaltung "Softwaredesign" am MCI entwickelt.</p>
+          <p>Die App ermöglicht es, dass sich als Nutzer registrieren, anmelden oder als Gast fortsetzen können.</p>
+          <ol>
+            <li>Schritt 1: Fahren Sie als Gast fort oder melden Sie sich an. Wenn Sie noch keinen Account haben, registrieren Sie sich.</li>
+            <li>Schritt 2: Wählen Sie aus, ob Sie ein Lied hochladen möchten oder ein Lied erkennen möchten.</li>
+            <li>Schritt 3: Um ein Lied hochzuladen, klicken Sie auf "Musik hochladen" und wählen Sie das Lied aus. Geben sie dazu noch den Titel, das Album und den Interpreten an</li>
+            <li>Schritt 4: Um ein Lied zu erkennen, klicken Sie auf "Musik erkennen" und wählen Sie aus ob die das Lied mit einer Datei oder mit dem Microfon erkennen wollen.</li>
+            <li>Schritt 5: Wenn das Lied erkannt wurde, wird der Titel, das Album und der Interpret angezeigt.</li>
+          </ol>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 elif option == 'Kontakt':
     st.title('Kontakt')
-    st.write('Wenn Sie Fragen haben, kontaktieren Sie bitte eine Person aus unserem Support-Team.')
-    st.write('Name: Sandra Grüner | E-Mail: s.gruener@mci4me.at')
-    st.write('Name: Tim Hornikel | E-Mail: t.hornikel@mci4me.at')
-    st.write('Name: Oskar Klöpfer | E-Mail: o.kloepfer@mci4me.at')
+    st.markdown(
+        """
+        Hier finden Sie unsere Kontaktinformationen:
+        - **Sandra Grüner** | E-Mail: [s.gruener@mci4me.at](mailto:s.gruener@mci4me.at)
+        - **Tim Hornikel** | E-Mail: [t.hornikel@mci4me.at](mailto:t.hornikel@mci4me.at)
+        - **Oskar Klöpfer** | E-Mail: [o.kloepfer@mci4me.at](mailto:o.kloepfer@mci4me.at)
+        """,
+        unsafe_allow_html=True
+    )
 
 elif option == 'Abmelden':
     logout()

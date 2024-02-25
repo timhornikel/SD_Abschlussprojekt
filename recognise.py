@@ -11,6 +11,7 @@ import setting
 KNOWN_EXTENSIONS = ["mp3", "wav", "flac", "m4a"]
 
 
+# Wird nicht verwendet
 def get_song_info(filename):
     """Get song info from a file."""
     tag = TinyTag.get(filename)
@@ -18,12 +19,13 @@ def get_song_info(filename):
     return (artist, tag.album, tag.title)
 
 
-def register_song(filename):
+def register_song(filename, artist, album, title):
     """Register a song in the database."""
     if song_in_db(filename):
+        print(f"{filename} already in database")
         return
     hashes = fingerprint_file(filename)
-    song_info = get_song_info(filename)
+    song_info = (artist, album, title)
     try:
         logging.info(f"{current_process().name} waiting to write {filename}")
         with lock:
@@ -105,3 +107,21 @@ def listen_to_song(filename=None):
     if info is not None:
         return info
     return matched_song
+
+
+if __name__ == "__main__":
+    pass
+    path = "song/StarWars60.wav"
+    path2 = "song/CantinaBand60.wav"
+    register_song(path, "John Williams", "Star Wars", "Main Title")
+    register_song(path2, "John Williams", "Star Wars", "Cantina Band")
+    print()
+
+
+    path3 = "song/StarWars3.wav"
+    path4 = "song/CantinaBand3.wav"
+    song = recognise_song(path3)
+    print(f"Recognised Song 1 title: {song[2]}, from the album {song[1]} by {song[0]}")
+    print()
+    song2 = recognise_song(path4)
+    print(f"Recognised Song 2 title: {song2[2]}, from the album {song2[1]} by {song2[0]}")
