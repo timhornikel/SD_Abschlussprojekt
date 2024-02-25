@@ -1,7 +1,8 @@
 import streamlit as st
 from user.users import User
 import recognise as mr
-import links
+import matplotlib.pyplot as plt
+import time
 
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:
@@ -158,10 +159,20 @@ elif option == 'Musik erkennen':
         elif recognition_option == "Über Mikrofon erkennen":
             try:
                 if st.button('Starten'):
-                    song = mr.listen_to_song()
+                    song, spectogram = mr.listen_to_song()
+                    progress_bar = st.progress(0)
+                    for i in range(21):
+                        time.sleep(0.1)
+                        progress_bar.progress(i*5, text=f'Musik wird verarbeitet. Fortschritt: {i*5}%')
+                    time.sleep(0.8)
+                    progress_bar.empty()
                     st.divider()
                     st.header("Erkannter Song")
-                    st.write(f"Der erkannte song: {song[2]} aus dem Ablum: {song[1]} von {song[0]} wurde erkannt.")
+                    st.write(f"Titel: {song[2]}")
+                    st.write(f"Album: {song[1]}")
+                    st.write(f"Künstler: {song[0]}")          
+                    st.divider()
+                    st.header("Links zum Song")
                     youtuba_link = mr.get_youtube_search_url(song[2], song[0])
                     spotify_link = mr.get_spotify_search_url(song[2], song[0])
                     st.link_button(url=youtuba_link, label='Öffne YouTube Video')
@@ -169,7 +180,7 @@ elif option == 'Musik erkennen':
                     st.divider()
                     st.header("Song History")
                     history = mr.display_song_history()
-                    st.dataframe(history)              
+                    st.dataframe(history)
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:
