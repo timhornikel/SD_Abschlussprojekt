@@ -3,6 +3,9 @@ from user.users import User
 import recognise as mr
 import matplotlib.pyplot as plt
 import time
+import tempfile
+
+
 
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:
@@ -14,6 +17,8 @@ if 'state' not in st.session_state:
     st.session_state.show_about = False
     st.session_state.show_contact = False
 
+
+
 # Funktion für Benachrichtigungen
 def notify(message, type='info'):
     if type == 'info':
@@ -23,9 +28,13 @@ def notify(message, type='info'):
     elif type == 'error':
         st.sidebar.error(message)
 
+
+
 # Hinweis nach Anmeldung
 def display_login_message():
     st.info("Bitte wählen Sie in der Sidebar nun 'Musik hochladen' oder 'Musik erkennen'.")
+
+
 
 # Abmeldung
 def logout():
@@ -76,10 +85,14 @@ def logout():
         notify('Erfolgreich als Gast angemeldet!', type='success')
         display_login_message()
 
+
+
 # Sidebar
 st.sidebar.image('pictures/Abschlussprojekt_Logo_userinterface.png', width=200)
 st.sidebar.title('Wählen Sie aus')
 option = st.sidebar.radio('Navigation', ['Nutzermanagement', 'Musik hochladen', 'Musik erkennen', 'About', 'Kontakt', 'Abmelden'])
+
+
 
 # Startseite
 if option == 'Nutzermanagement':
@@ -124,6 +137,8 @@ if option == 'Nutzermanagement':
             notify('Erfolgreich als Gast angemeldet!', type='success')
             display_login_message()
 
+
+
 # Musikseite
 elif option == 'Musik hochladen':
     if st.session_state.logged_in_user:
@@ -132,11 +147,16 @@ elif option == 'Musik hochladen':
         uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
         if uploaded_file is not None:
             try:
+                # Create a temporary file with the appropriate extension
+                tfile = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+                tfile.write(uploaded_file.getvalue())
+                tfile.close()
+
                 title = st.text_input('Titel')
                 artist = st.text_input('Künstler')
                 album = st.text_input('Album')
                 if st.button('Hochladen'):
-                    mr.register_song(uploaded_file, artist, album, title)
+                    mr.register_song(tfile.name, artist, album, title)  # Pass the temporary file path
                     st.success('Musikdatei erfolgreich hochgeladen!')
             except Exception as e:
                 st.error(f'Fehler beim Hochladen der Musikdatei: {e}')
@@ -149,42 +169,36 @@ elif option == 'Musik erkennen':
         st.write(f'Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         recognition_option = st.radio("Wählen Sie eine Erkennungsoption:", ["Datei hochladen", "Über Mikrofon erkennen"])
         if recognition_option == "Datei hochladen":
-            uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
+            uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["wav", "mp3"])
             if uploaded_file is not None:
                 try:
-                    song = mr.recognise_song(uploaded_file)
-                    st.write(f"Titel: {song[2]}, Album: {song[1]}, Künstler: {song[0]}")
+                    # Create a temporary file
+                    tfile = tempfile.NamedTemporaryFile(suffix=".wav" ,delete=False) 
+                    tfile.write(uploaded_file.getvalue())
+                    tfile.close()
+
+                    if st.button('Erkennen'):
+                        song = mr.recognise_song(tfile.name)  # Pass the temporary file path
+                        mr.show_song_info(song)
                 except Exception as e:
                     st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
         elif recognition_option == "Über Mikrofon erkennen":
             try:
                 if st.button('Starten'):
-                    song, spectogram = mr.listen_to_song()
+                    song = mr.listen_to_song()
                     progress_bar = st.progress(0)
                     for i in range(21):
                         time.sleep(0.1)
                         progress_bar.progress(i*5, text=f'Musik wird verarbeitet. Fortschritt: {i*5}%')
                     time.sleep(0.8)
                     progress_bar.empty()
-                    st.divider()
-                    st.header("Erkannter Song")
-                    st.write(f"Titel: {song[2]}")
-                    st.write(f"Album: {song[1]}")
-                    st.write(f"Künstler: {song[0]}")          
-                    st.divider()
-                    st.header("Links zum Song")
-                    youtuba_link = mr.get_youtube_search_url(song[2], song[0])
-                    spotify_link = mr.get_spotify_search_url(song[2], song[0])
-                    st.link_button(url=youtuba_link, label='Öffne YouTube Video')
-                    st.link_button(url=spotify_link, label='Öffne Spotify Lied')
-                    st.divider()
-                    st.header("Song History")
-                    history = mr.display_song_history()
-                    st.dataframe(history)
+                    mr.show_song_info(song)
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:
         st.warning("Bitte melden Sie sich zuerst an.")
+
+
 
 # About und Kontakt
 elif option == 'About':

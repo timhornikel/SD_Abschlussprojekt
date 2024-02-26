@@ -19,7 +19,7 @@ def convert_file_to_spectogram(filename):
     return generate_spectogram(audio)
 
 
-def get_peaks(Sxx):
+def find_peaks(Sxx):
     """Finds peaks in a spectrogram."""
     data_max = maximum_filter(Sxx, size=setting.PEAK_BOX_SIZE, mode='constant', cval=0.0)
     peak_goodmask = (Sxx == data_max)
@@ -75,7 +75,7 @@ def generate_hash_points(points, filename):
 def fingerprint_file(filename):
     """Generate hashes for an audio file."""
     f, t, Sxx = convert_file_to_spectogram(filename)
-    peaks = get_peaks(Sxx)
+    peaks = find_peaks(Sxx)
     peaks = idxs_to_tf_pairs(peaks, t, f)
     return generate_hash_points(peaks, filename)
 
@@ -83,6 +83,6 @@ def fingerprint_file(filename):
 def fingerprint_audio(frames):
     """Generate hashes for audio frames."""
     f, t, Sxx = generate_spectogram(frames)
-    peaks = get_peaks(Sxx)
+    peaks = find_peaks(Sxx)
     peaks = idxs_to_tf_pairs(peaks, t, f)
     return generate_hash_points(peaks, "recorded")

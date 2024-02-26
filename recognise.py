@@ -8,6 +8,7 @@ from fingerprinting import fingerprint_file, fingerprint_audio, generate_spectog
 from storage import store_song, get_matches, get_info_for_song_id, song_in_db, checkpoint_db, get_song_history, save_song_history
 import setting
 import pandas as pd
+import streamlit as st
 
 KNOWN_EXTENSIONS = ["mp3", "wav", "flac", "m4a"]
 
@@ -97,11 +98,10 @@ def listen_to_song(filename=None):
     hashes = fingerprint_audio(audio)
     matches = get_matches(hashes)
     matched_song = best_match(matches)
-    spectogram = generate_spectogram(audio)
     info = get_info_for_song_id(matched_song)
     save_song_history(info[2], info[1], info[0])
     if info is not None:
-        return info, spectogram
+        return info
     return matched_song
 
 
@@ -133,13 +133,31 @@ def get_spotify_search_url(name, artist):
     return spotify_search_url
 
 
+def show_song_info(song):
+    """Display the song info and spectogram."""
+    st.divider()
+    st.header("Erkannter Song")
+    st.write(f"Titel: {song[2]}")
+    st.write(f"Album: {song[1]}")
+    st.write(f"Künstler: {song[0]}")          
+    st.divider()
+    st.header("Links zum Song")
+    youtuba_link = get_youtube_search_url(song[2], song[0])
+    spotify_link = get_spotify_search_url(song[2], song[0])
+    st.link_button(url=youtuba_link, label='Öffne YouTube Video')
+    st.link_button(url=spotify_link, label='Öffne Spotify Lied')
+    st.divider()
+    st.header("Song History")
+    history = display_song_history()
+    st.dataframe(history)
+
 
 if __name__ == "__main__":
     pass
     #path = "song/Phlying_6020.wav"
     #register_song(path, "Lil Kiddo from 6020", "6020 Mixtape", "Phlying 6020")
     print()
-    path = "6020.wav"
+    path = "song/CantinaBand3.wav"
     recognised_song = recognise_song(path)
     print(recognised_song)
     
