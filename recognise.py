@@ -9,6 +9,8 @@ from storage import store_song, get_matches, get_info_for_song_id, song_in_db, c
 import setting
 import pandas as pd
 import streamlit as st
+import requests
+from urllib.parse import quote_plus
 
 KNOWN_EXTENSIONS = ["mp3", "wav", "flac", "m4a"]
 
@@ -121,6 +123,21 @@ def display_song_history():
         return df
 
 
+def get_youtube_video(title, artist):
+    query = f"{title} {artist} official music video"
+    url = f"https://www.youtube.com/results?search_query={quote_plus(query)}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        video_id = None
+        start_index = response.text.find('{"videoRenderer":{"videoId":"')
+        if start_index != -1:
+            end_index = response.text.find('"', start_index + 30)
+            video_id = response.text[start_index + 29:end_index]
+        if video_id:
+            return f"https://www.youtube.com/watch?v={video_id}"
+    return None
+
+
 def get_youtube_search_url(name, artist):
     """Get the youtube search link for a song."""
     youtube_search_url = f'https://www.youtube.com/results?search_query={name} {artist}'
@@ -144,12 +161,16 @@ def show_song_info(song):
     st.header("Links zum Song")
     youtuba_link = get_youtube_search_url(song[2], song[0])
     spotify_link = get_spotify_search_url(song[2], song[0])
+    video_link = get_youtube_video(song[2], song[0])
     st.link_button(url=youtuba_link, label='Öffne YouTube Video')
     st.link_button(url=spotify_link, label='Öffne Spotify Lied')
+    if video_link:
+        st.video(video_link)
     st.divider()
     st.header("Song History")
     history = display_song_history()
     st.dataframe(history)
+
 
 
 if __name__ == "__main__":
