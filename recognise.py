@@ -172,6 +172,10 @@ def show_song_info(song):
     st.dataframe(history)
 
 
+def get_meta_data_for_song(title, artist):
+    """Get the meta data for a song."""
+    tag = TinyTag.get(f"{title} - {artist}.mp3")
+    return tag
 
 if __name__ == "__main__":
     pass
