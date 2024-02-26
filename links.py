@@ -1,5 +1,6 @@
 import requests
 import streamlit as st
+import recognise
 
 
 def get_album_cover_from_duckduckgo_api(artist, song):
@@ -22,6 +23,19 @@ if st.button("Get album cover"):
                 st.error("No album cover found.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
+
+#get metadata for a song
+st.title("Metadata for a song")
+if st.button("Get metadata"):
+    if song and artist:
+        try:
+            song = recognise.get_meta_data_for_song(song, artist)
+            if song:
+                st.write(song)
+            else:
+                st.error("No metadata found.")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 
 if __name__ == '__main__':
