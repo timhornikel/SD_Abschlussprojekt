@@ -161,14 +161,15 @@ elif option == 'Musik erkennen':
                     tfile.close()
 
                     if st.button('Erkennen'):
-                        st.write("Musik wird verarbeitet...")
                         progress_bar = st.progress(0)
                         for i in range(21):
                             time.sleep(0.1)
-                            progress_bar.progress(i*5, text=f'Musik wird verarbeitet. Fortschritt: {i*5}%')
+                            progress_bar.progress(i*5, text=f'Musik wird Hochgeladen. Fortschritt: {i*5}%')
                         time.sleep(0.8)
                         progress_bar.empty()
-                        song = mr.recognise_song(tfile.name)  # Pass the temporary file path
+                        with st.spinner("Erkennen der Musikdatei..."):
+                            st.empty()
+                            song = mr.recognise_song(tfile.name)  # Pass the temporary file path
                         mr.show_song_info(song)
                 except Exception as e:
                     st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
