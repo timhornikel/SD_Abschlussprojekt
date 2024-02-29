@@ -150,7 +150,7 @@ elif option == 'Musik hochladen':
         st.header(f':male-student: Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         st.divider()
         # File uploader für Musikdateien
-        uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
+        uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["wav"])
         if uploaded_file is not None:
             try:
                 # Create a temporary file with the appropriate extension
