@@ -22,11 +22,11 @@ if 'state' not in st.session_state:
 # Funktion für Benachrichtigungen
 def notify(message, type='info'):
     if type == 'info':
-        st.sidebar.info(message)
+        st.info(message)
     elif type == 'success':
         st.success(message)
     elif type == 'error':
-        st.sidebar.error(message)
+        st.error(message)
 
 
 
@@ -60,6 +60,7 @@ option = st.sidebar.radio('Navigation', ['Nutzermanagement', 'Musik hochladen', 
 # Startseite
 if option == 'Nutzermanagement':
     st.title(':busts_in_silhouette: Nutzermanagement')
+    # Überprüfen, ob ein Benutzer angemeldet ist
     if st.session_state.logged_in_user:
         st.header(f':male-student: Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         st.divider()
@@ -70,22 +71,29 @@ if option == 'Nutzermanagement':
         st.write('Bitte melden Sie sich an oder registrieren Sie sich, um die App zu nutzen.')
         st.divider()
 
-        action = st.radio('Wählen Sie Ihre Option:', ['Anmelden', 'Registrieren', 'Als Gast anmelden'])
+        action = st.radio('Wählen Sie Ihre Option:', ['Anmelden', 'Registrieren', 'Als Gast anmelden', 'Nutzer löschen'])
 
+        # Anmeldung für für registrierte benutzer
         if action == 'Anmelden':
             st.title('Anmeldung')
             st.session_state.username = st.text_input('Benutzername', st.session_state.username)
             st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
             
             if st.button('Anmelden'):
-                if User.anmelden(st.session_state.username, st.session_state.password):
-                    st.session_state.logged_in_user = st.session_state.username
-                    notify(f'Erfolgreich als {st.session_state.username} angemeldet!', type='success')
-                    st.session_state.username = ''
-                    st.session_state.password = ''
-                    display_login_message()
-                    st.rerun()
+                if User.benutzer_existiert(st.session_state.username):
+                    if User.anmelden(st.session_state.username, st.session_state.password):
+                        st.session_state.logged_in_user = st.session_state.username
+                        notify(f'Erfolgreich als {st.session_state.username} angemeldet!', type='success')
+                        st.session_state.username = ''
+                        st.session_state.password = ''
+                        display_login_message()
+                        st.rerun()
+                    else:
+                        notify(f"Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.", type='error')
+                else:
+                    notify(f"Benutzer {st.session_state.username} existiert nicht. Registrieren sie sich erst.", type='error')
 
+        # Registrierungsmanagement zum anlegen neue benutzer
         elif action == 'Registrieren':
             st.title('Registrierung')
             st.session_state.username = st.text_input('Benutzername', st.session_state.username)
@@ -93,31 +101,55 @@ if option == 'Nutzermanagement':
             st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
             
             if st.button('Registrieren'):
+                # Überprüfen, ob der Benutzername bereits existiert
                 if User.benutzer_existiert(st.session_state.username):
                     notify("Benutzername bereits vergeben. Bitte wählen Sie einen anderen.", type='error')
                 else:
+                    # Lege Benutzer an wenn noch nicht vorhanden
                     benutzer = User(st.session_state.username, st.session_state.email, st.session_state.password)
                     benutzer.speichern()
                     notify(f'Benutzer {st.session_state.username} erfolgreich registriert!', type='success')
                     st.session_state.username = ''
                     st.session_state.email = ''
                     st.session_state.password = ''
-                    display_login_message()
+                    notify('Nutzer erfolgreich angelegt, sie können sich jetzt anemelden', type='success')
 
+        # Als gast anmelden für diejenigen, die sich nicht anmelden wollen
         elif action == 'Als Gast anmelden':
             st.session_state.logged_in_user = 'Gast'
             notify('Erfolgreich als Gast angemeldet!', type='success')
             display_login_message()
             st.rerun()
+        
+        # Löschen von Benutzern
+        elif action == 'Nutzer löschen':
+            st.title('Nutzer löschen')
+            st.session_state.username = st.text_input('Benutzername', st.session_state.username)
+            st.session_state.password = st.text_input('Passwort', type='password', value=st.session_state.password)
+
+            if st.button('Nutzer löschen'):
+                # Überprüfen, ob der Benutzer existiert
+                if User.benutzer_existiert(st.session_state.username):
+                    # Löschen wenn der Benutzer das richtige Passwort eingegeben hat -> Sicherheitsabfrage
+                    if User.benutzer_loeschen(st.session_state.username, st.session_state.password):
+                        notify(f'Benutzer {st.session_state.username} erfolgreich gelöscht!', type='success')
+                        st.session_state.username = ''
+                        st.session_state.password = ''
+                    else:
+                        notify(f"Benutzer {st.session_state.username} konnte nicht gelöscht werden. Bitte überprüfen Sie Ihre Anmeldedaten.", type='error')
+                else:
+                    notify(f"Benutzer {st.session_state.username} existiert nicht.", type='error')
 
 
 
 # Musikseite
 elif option == 'Musik hochladen':
+    # Überprüfen, ob ein Benutzer angemeldet ist
     if st.session_state.logged_in_user:
         st.title(':new: Musik hochladen')
         st.header(f':male-student: Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         st.divider()
+        # File uploader für Musikdateien
         uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["mp3", "wav"])
         if uploaded_file is not None:
             try:
@@ -131,7 +163,9 @@ elif option == 'Musik hochladen':
                 album = st.text_input('Album')
                 if st.button('Hochladen'):
                     with st.spinner("Hochladen der Musikdatei..."):
-                        mr.register_song(tfile.name, artist, album, title)  # Pass the temporary file path
+                        # Lade den Song in die Datenbank hoch
+                        mr.register_song(tfile.name, artist, album, title) 
+                        # zeige Progressbar für die Bearbeitung
                         progress_bar = st.progress(0)
                         for i in range(21):
                             time.sleep(0.1)
@@ -145,6 +179,7 @@ elif option == 'Musik hochladen':
         st.warning("Bitte melden Sie sich zuerst im Nutzermanagement an.")
 
 elif option == 'Musik erkennen':
+    # Überprüfen, ob ein Benutzer angemeldet ist
     if st.session_state.logged_in_user:
         st.title(f':studio_microphone: Musik erkennen')
         st.header(f':male-student: Angemeldeter Benutzer: {st.session_state.logged_in_user}')
@@ -155,36 +190,43 @@ elif option == 'Musik erkennen':
             uploaded_file = st.file_uploader("Wählen Sie eine Musikdatei aus", type=["wav"])
             if uploaded_file is not None:
                 try:
-                    # Create a temporary file
+                    # temporäre Datei erstellen für 
                     tfile = tempfile.NamedTemporaryFile(suffix=".wav" ,delete=False) 
                     tfile.write(uploaded_file.getvalue())
                     tfile.close()
 
                     if st.button('Erkennen'):
+                        # progress bar für die erkennung
                         progress_bar = st.progress(0)
                         for i in range(21):
                             time.sleep(0.1)
                             progress_bar.progress(i*5, text=f'Musik wird Hochgeladen. Fortschritt: {i*5}%')
                         time.sleep(0.8)
                         progress_bar.empty()
+                        # Ansicht wenn die Musikerkennung länger läuft
                         with st.spinner("Erkennen der Musikdatei..."):
-                            st.empty()
                             song = mr.recognise_song(tfile.name)  # Pass the temporary file path
+                            st.empty()
+                            # Zeige die Musikinformationen
                         mr.show_song_info(song)
                 except Exception as e:
                     st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
         elif recognition_option == ":microphone: Über Mikrofon erkennen":
             try:
                 if st.button('Starten'):
-                    with st.spinner("Starte Aufnahme..."):
+                    # Ansicht für die Aufnahme
+                    with st.spinner("Nimmt Audio auf..."):
+                        # Nimm Song auf und speicher 
                         song = mr.listen_to_song()
                         st.empty()
+                    # Wenn es fertig aufgenommen ist zeige Progressbar und zeige die Musikinformationen
                     progress_bar = st.progress(0)
                     for i in range(21):
                         time.sleep(0.1)
                         progress_bar.progress(i*5, text=f'Musik wird verarbeitet. Fortschritt: {i*5}%')
                     time.sleep(0.8)
                     progress_bar.empty()
+                    # Zeige Infos von dem Song
                     mr.show_song_info(song)
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
@@ -196,6 +238,7 @@ elif option == 'Musik erkennen':
 # About und Kontakt
 elif option == 'About':
     st.title(':book: About')
+    # Kurzer Text zu der App und Funktionsweise
     st.markdown(
         """
         <div>
@@ -206,7 +249,7 @@ elif option == 'About':
                 <li>Schritt 2: Wählen Sie aus, ob Sie ein Lied hochladen oder erkennen möchten.</li>
                 <li>Schritt 3: Um ein Lied hochzuladen, klicken Sie auf "Musik hochladen" und geben Sie Titel, Album und Interpret an.</li>
                 <li>Schritt 4: Erkennen Sie ein Lied durch Auswahl einer .wav-Datei oder Aufnahme über das Mikrofon (8 Sekunden).</li>
-                <li>Schritt 5: Wenn ein Lied erkannt wurde, werden Informationen (Titel, Album, Interpret) angezeigt. Zusätzlich erhalten Sie Links zu Spotify und Youtube, um das Lied zu hören. Ein Youtube-Video wird ebenfalls eingebettet, um das Lied direkt in der App anzuhören. Zudem werden die letzten 5 erkannten Lieder in der Historie angezeigt.</li>
+                <li>Schritt 5: Wenn ein Lied erkannt wurde, werden Informationen (Titel, Album, Interpret) angezeigt sowie ein zugehöriges Albumcover. Zusätzlich erhalten Sie Links zu Spotify und Youtube, um das Lied zu hören. Ein Youtube-Video wird ebenfalls eingebettet, um das Lied direkt in der App anzuhören. Zudem werden die letzten 5 erkannten Lieder in der Historie angezeigt.</li>
             </ol>
         </div>
         """,
@@ -216,6 +259,7 @@ elif option == 'About':
 
 elif option == 'Kontakt':
     st.title('Kontakt :girl: :boy: :boy:')
+    # Kontaktinformationen
     st.markdown(
         """
         Hier finden Sie unsere Kontaktinformationen:
@@ -227,4 +271,9 @@ elif option == 'Kontakt':
     )
 
 elif option == 'Abmelden':
-    logout()
+    # Überprüfen, ob ein Benutzer angemeldet ist
+    if st.session_state.logged_in_user:
+        # Abmelden wenn ein user angemeldet ist, wenn nicht dann wird eine Warnung ausgegeben
+        logout()
+    else:
+        st.warning("Sie sind nicht angemeldet.")
