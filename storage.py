@@ -32,7 +32,11 @@ def delete_table(table_name):
 
 
 def get_song_history():
-    """get the last 5 songs recognised"""
+    """get the last 5 songs recognised
+    
+    Returns:
+        list: The last 5 songs recognised.
+    """
     with get_cursor() as (conn, c):
         c.execute("SELECT title, album, artist FROM song_history ORDER BY Id DESC LIMIT 5")
         return c.fetchall()
@@ -51,7 +55,11 @@ def checkpoint_db():
 
 
 def song_in_db(filename):
-    """Check if a song is already in the database."""
+    """Check if a song is already in the database.
+    
+    Returns:
+        bool: True if the song is in the database, False otherwise.
+    """
     with get_cursor() as (conn, c):
         song_id = str(uuid.uuid5(uuid.NAMESPACE_OID, filename).int)
         c.execute("SELECT * FROM song_info WHERE song_id=?", (song_id,))
@@ -70,7 +78,11 @@ def store_song(hashes, song_info):
 
 
 def get_matches(hashes, threshold=5):
-    """Get matches for a set of hashes."""
+    """Get matches for a set of hashes.
+    
+    Returns:
+        dict: The matches.
+    """
     h_dict = {}
     for h, t, _ in hashes:
         h_dict[h] = t
@@ -85,7 +97,11 @@ def get_matches(hashes, threshold=5):
 
 
 def get_info_for_song_id(song_id):
-    """Get song info for a song_id."""
+    """Get song info for a song_id.
+    
+    Returns:
+        tuple: The song info.
+    """
     with get_cursor() as (conn, c):
         c.execute("SELECT artist, album, title FROM song_info WHERE song_id = ?", (song_id,))
         return c.fetchone()
