@@ -1,42 +1,26 @@
-import requests
-import streamlit as st
-import recognise
+from duckduckgo_search import DDGS
 
+def get_album_cover(title, interpret):
+    # Suchbegriffe für die Albumcover-Suche
+    keywords = f"{title}{interpret} Albumcover"
 
-def get_album_cover_from_duckduckgo_api(artist, song):
-    """Get the album cover from the DuckDuckGo API."""
-    url = f"https://api.duckduckgo.com/?q={artist}+{song}+album+cover&format=json"
-    response = requests.get(url)
-    data = response.json()
-    return data["Image"] if data["Image"] else None
-
-st.title("Picture of the album cover")
-artist = st.text_input("Artist")
-song = st.text_input("Song")
-if st.button("Get album cover"):
-    try:
-        if artist and song:
-            album_cover = get_album_cover_from_duckduckgo_api(artist, song)
-            if album_cover:
-                st.image(album_cover, width=300)
-            else:
-                st.error("No album cover found.")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-
-#get metadata for a song
-st.title("Metadata for a song")
-if st.button("Get metadata"):
-    if song and artist:
-        try:
-            song = recognise.get_meta_data_for_song(song, artist)
-            if song:
-                st.write(song)
-            else:
-                st.error("No metadata found.")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-
-if __name__ == '__main__':
-    pass
+    # Ergebnisse der Bildersuche abrufen
+    with DDGS() as ddgs:
+        ddgs_images_gen = ddgs.images(
+            keywords,
+            region="wt-wt",
+            safesearch="off",
+            size=None,
+            color=None,
+            type_image=None,
+            layout=None,
+            license_image=None,
+            max_results=1,  # Anzahl der maximalen Ergebnisse
+        )
+        
+        # Durch die Ergebnisse iterieren und die URL des ersten Bildes zurückgeben
+        for result in ddgs_images_gen:
+            return result['image']
+    
+    # Wenn keine Ergebnisse gefunden werden
+    return None
