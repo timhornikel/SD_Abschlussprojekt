@@ -79,9 +79,9 @@ Wir danken Cameron MacLeod für seine wertvolle Arbeit und seine Bereitschaft, d
 
 ## Mitwirkende
 
-- **Sandra Grüner:** (@SandysOO)
-- **Tim Hornikel:** (@timhornikel)
-- **Oskar Klöpfer:** (@Docterpanzen)
+- **Sandra Grüner:** [Sandra Grüner](https://github.com/SandysOO)
+- **Tim Hornikel:** [Tim Hornikel](https://github.com/timhornikel)
+- **Oskar Klöpfer:** [Oskar Klöpfer](https://github.com/Docterpanzen)
 
 
 ## Quellen
@@ -90,5 +90,3 @@ Wir danken Cameron MacLeod für seine wertvolle Arbeit und seine Bereitschaft, d
 - SQLite-Dokumentation: https://www.sqlite.org/docs.html
 - Streamlit-Dokumentation: https://docs.streamlit.io/
 - Librosa-Dokumentation: https://librosa.org/doc/main/index.html
-- Musikerkennung von Abracadabra: https://github.com/notexactlyawe/abracadabra/tree/master
-
