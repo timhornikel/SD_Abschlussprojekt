@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import time
 import tempfile
 
-
-
 # Initialisierung der Session-Variablen
 if 'state' not in st.session_state:
     st.session_state.state = 'start'
@@ -17,8 +15,6 @@ if 'state' not in st.session_state:
     st.session_state.show_about = False
     st.session_state.show_contact = False
 
-
-
 # Funktion für Benachrichtigungen
 def notify(message, type='info'):
     if type == 'info':
@@ -28,13 +24,9 @@ def notify(message, type='info'):
     elif type == 'error':
         st.error(message)
 
-
-
 # Hinweis nach Anmeldung
 def display_login_message():
-    st.info("Bitte wählen Sie in der Sidebar nun 'Musik hochladen' oder 'Musik erkennen'.")
-
-
+    st.info("Bitte wählen Sie in der Sidebar 'Musik hochladen' oder 'Musik erkennen'.")
 
 # Abmeldung
 def logout():
@@ -48,14 +40,10 @@ def logout():
 
     st.success('Sie haben sich erfolreich abgemeldet. Sie können die App jetzt schließen oder sich im Nutzermanagement erneut anmelden.')
 
-
-
 # Sidebar
 st.sidebar.image('pictures/Abschlussprojekt_Logo_userinterface.png', width=200)
 st.sidebar.title('Wählen Sie aus')
 option = st.sidebar.radio('Navigation', ['Nutzermanagement', 'Musik hochladen', 'Musik erkennen', 'About', 'Kontakt', 'Abmelden'])
-
-
 
 # Startseite
 if option == 'Nutzermanagement':
@@ -65,7 +53,7 @@ if option == 'Nutzermanagement':
         st.header(f':male-student: Angemeldeter Benutzer: {st.session_state.logged_in_user}')
         st.divider()
         st.info('Sie können nun Musik hochladen oder erkennen. Klicken Sie auf die entsprechende Option in der Sidebar.')
-        st.warning('Um sich umzumelden klicken sie erst auf "Abmelden" und kommen dann wieder in das Nutzermanagement')
+        st.warning('Um einen anderen Nutzer anzumelden klicken sie erst auf "Abmelden" und kommen dann wieder in das Nutzermanagement')
     elif st.session_state.logged_in_user is None:
         st.header('Sie sind nicht angemeldet')
         st.write('Bitte melden Sie sich an oder registrieren Sie sich, um die App zu nutzen.')
@@ -139,8 +127,6 @@ if option == 'Nutzermanagement':
                         notify(f"Benutzer {st.session_state.username} konnte nicht gelöscht werden. Bitte überprüfen Sie Ihre Anmeldedaten.", type='error')
                 else:
                     notify(f"Benutzer {st.session_state.username} existiert nicht.", type='error')
-
-
 
 # Musikseite
 elif option == 'Musik hochladen':
@@ -233,8 +219,6 @@ elif option == 'Musik erkennen':
     else:
         st.warning("Bitte melden Sie sich zuerst im Nutzermanagement an.")
 
-
-
 # About und Kontakt
 elif option == 'About':
     st.title(':book: About')
@@ -255,7 +239,6 @@ elif option == 'About':
         """,
         unsafe_allow_html=True
     )
-
 
 elif option == 'Kontakt':
     st.title('Kontakt :girl: :boy: :boy:')
