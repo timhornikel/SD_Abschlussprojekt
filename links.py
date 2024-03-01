@@ -56,3 +56,9 @@ def get_spotify_search_url(name, artist):
     """Get the spotify search link for a song."""
     spotify_search_url = f'https://open.spotify.com/search/{name} {artist}'
     return spotify_search_url
+
+# Link funktioniert nicht
+def get_apple_music_search_url(name, artist):
+    """Get the Apple Music search link for a song."""
+    apple_music_search_url = f'https://music.apple.com/search?term={name}+{artist}'
+    return apple_music_search_url
