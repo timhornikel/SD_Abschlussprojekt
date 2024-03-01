@@ -249,7 +249,7 @@ elif option == 'About':
                 <li>Schritt 2: Wählen Sie aus, ob Sie ein Lied hochladen oder erkennen möchten.</li>
                 <li>Schritt 3: Um ein Lied hochzuladen, klicken Sie auf "Musik hochladen" und geben Sie Titel, Album und Interpret an.</li>
                 <li>Schritt 4: Erkennen Sie ein Lied durch Auswahl einer .wav-Datei oder Aufnahme über das Mikrofon (8 Sekunden).</li>
-                <li>Schritt 5: Wenn ein Lied erkannt wurde, werden Informationen (Titel, Album, Interpret) angezeigt sowie ein zugehöriges Albumcover. Zusätzlich erhalten Sie Links zu Spotify und Youtube, um das Lied zu hören. Ein Youtube-Video wird ebenfalls eingebettet, um das Lied direkt in der App anzuhören. Zudem werden die letzten 5 erkannten Lieder in der Historie angezeigt.</li>
+                <li>Schritt 5: Wenn ein Lied erkannt wurde, werden Informationen (Titel, Album, Interpret) angezeigt sowie ein zugehöriges Albumcover. Zusätzlich erhalten Sie Links zu Spotify und Youtube, um das Lied zu hören. Ein Youtube-Video wird ebenfalls eingebettet, um das Lied direkt in der App anzuhören. Zudem werden die letzten 5 erkannten Lieder in der Historie zu dem angemeldeten Benutzer angezeigt.</li>
             </ol>
         </div>
         """,
@@ -263,9 +263,12 @@ elif option == 'Kontakt':
     st.markdown(
         """
         Hier finden Sie unsere Kontaktinformationen:
-        - :girl: **Sandra Grüner** | E-Mail: [s.gruener@mci4me.at](mailto:s.gruener@mci4me.at)
-        - :boy: **Tim Hornikel** | E-Mail: [t.hornikel@mci4me.at](mailto:t.hornikel@mci4me.at)
-        - :boy: **Oskar Klöpfer** | E-Mail: [o.kloepfer@mci4me.at](mailto:o.kloepfer@mci4me.at)
+        - :girl: **Sandra Grüner**  | E-Mail: [Sandra Grüner](mailto:s.gruener@mci4me.at)
+                                    | GitHub: [Sandra Gruener](https://github.com/Sandys00)
+        - :boy: **Tim Hornikel**    | E-Mail: [Tim Hornikel](mailto:t.hornikel@mci4me.at)
+                                    | GitHub: [Tim Hornikel](https://github.com/timhornikel)
+        - :boy: **Oskar Klöpfer** | E-Mail: [Oskar Kloepfer](mailto:o.kloepfer@mci4me.at)
+                                    | GitHub: [Oskar Kloepfer](https://github.com/Docterpanzen)
         """,
         unsafe_allow_html=True
     )

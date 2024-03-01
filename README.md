@@ -50,17 +50,22 @@ Das Projekt umfasst die Entwicklung einer Anwendung zur Musikerkennung und einer
 - **Nutzermanagement:** Sie können sich in dem Nutzermanagement als Gast anmelden oder registrieren und mit dem Benutzer anmelden. Des weiteren steht zur Auswahl dass der Benutzereintrag aus der Datenbank gelöscht werde, dafür braucht man aber den Benutzername und das Passwort damit man nicht ein Fremden Nutzer rauslöschen kann.
 - **Musik hochladen:** Die Musikstücke hochladen geht nur wenn ein Nutzer angemeldet ist. Es können nur Dateien mit dem .wav Format hochgeladen werden. Aus den Hochgeladenen Songs werden dann Fingerprints erstellt und diese dann in die Datenbank samt den Meta-Daten abgespeichert. Die Metadaten haben in diesem Fall eine andere Tabelle als die Fingerprints und sind über eine ID miteinander verbunden.
 - **Musik erkennen:** Das Erkennen von Musik funktioniert, gleich wie das Hochladen von Musik, nur wenn ein Nutzer angemeldet ist. Um Musik hochzuladen muss erstmal ausgewählt werden wie Musik hochgeladen werden soll. Entweder durch eine .wav Datei welche man einfügen kann oder mithilfe von dem Mikrofon. Bei der Eingabe durch das Mikrofon werden 8 Sekunden Audio aufgenommen und diese dann, gleich wie die .wav Datei, verarbeitet. Wenn ein Lied erkannt wurde dann kommt man zu der Ausgabe der Hinterlegten Daten. Dort werden als erstes die Meta-Daten des erkannten Musikstückes preisgegeben, sowie ein Albumcover welches in der DuckDuckGo-API gesucht wurde. Dann kommen diverse Links zu dem Musikstück welche auf die Youtube und Spotify Seite führen. In diesem Absatz wird direkt auch noch ein Youtube-Video zu dem erkannten Song angezeigt. Die letzte Ausgabe bei erfolgreich erkannten Songs ist die Historie der letzten erkannten Songs.
+- **About:** In dem About Reiter wird eine kurze Anleitung und Information zu dem Projekt angezeigt.
+- **Kontakt** In dem Menü Kontakt werden die Kontakt
 
 
 
 ## Erweiterungen
 
-- **Nutzermanagementsystem:** Ein Nutzermanagementsystem wurde implementiert, um die Behandlung der Nutzer zu verbessern.
-- **Mikrofon zur Musikerkennung:** Das System kann nun Musikstücke anhand des Mikrofons erkennen.
-- **Anzeige von Meta-Daten:** Die Meta-Daten des erkannten Musikstücks werden angezeigt, ebenso wie das entsprechende Albumcover.
-- **Youtube- und Spotify-Links:** Direkte Links zum erkannten Musikstück auf Youtube und Spotify wurden hinzugefügt.
+- **Nutzermanagementsystem:** Ein Nutzermanagementsystem wurde implementiert, um die Behandlung der Nutzer zu verbessern. Dabei kann man sich als Gast anmelden oder sich als Nutzer registrieren und anschließend mit diesem Nutzer anmelden. Man kann auch seinen Nutzereintrag mit dem Nutzername und Passwort löschen. Es wurde auch ein dementsprechendes Fehlermanagement eingebaut was dem Nutzer die wichtigsten Fehler ausgibt.
+- **Mikrofon zur Musikerkennung:** Das System kann Musikstücke anhand des Mikrofons erkennen.
+- **Anzeige von Meta-Daten:** Die Meta-Daten des erkannten Musikstücks werden angezeigt.
+- **Albumcover von DuckDuckGo-API:** Es wurde mit dem erkannten Songtitel und dem Interpret das entsprechende Albumcover aus der DuckDuckGo-API rausgezogen und mit den Meta-Daten angezeigt.
+- **Youtube- und Spotify-Links:** Die Links zu Spotify und Youtube wurden erstellt mit welchen man direkt auf die Seite komm um die Lieder anzuhören.
 - **Youtube-Video-Player:** Das Youtube-Video kann direkt im Browser abgespielt werden.
-- **Historie der letzten 5 Songs:** Es wird eine Historie der letzten 5 erkannten Songs angelegt und angezeigt.
+- **Historie der letzten 5 Songs:** Es wird eine Historie der letzten 5 erkannten Songs angelegt und angezeigt. Jeder Nutzer hat eine eigene Song History und der Gastbenutzer hat auch eine eigene Song History.
+- **Kontaktinformationen:** Unter dem Reiter "Kontakt" werden die Kontaktdaten der Gruppenmitglieder hinterlegt und direkt mit einem Link zur E-Mail-Adresse sowie zum GitHub-Account versehen.
+
 
 
 ## UML-Diagramme der Softwarestruktur

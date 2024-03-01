@@ -135,24 +135,24 @@ def show_song_info(song, user):
     st.header("Erkannter Song")
     col1, col2 = st.columns(2)
     with col1:
-        st.write(f"Titel: {song[2]}")
-        st.write(f"Album: {song[1]}")
-        st.write(f"Künstler: {song[0]}")
+        st.write(f"**Titel:**  {song[2]}")
+        st.write(f"**Album:**  {song[1]}")
+        st.write(f"**Künstler:**  {song[0]}")
     with col2:
         image = links.get_album_cover(song[2], song[0])
         if image:
             st.image(image, caption=f"{song[2]} Albumcover")    
     st.divider()
     st.header("Links zum Song")
-    youtuba_link = links.get_youtube_search_url(song[2], song[0])
+    youtube_link = links.get_youtube_search_url(song[2], song[0])
     spotify_link = links.get_spotify_search_url(song[2], song[0])
     video_link = links.get_youtube_video(song[2], song[0])
-    st.link_button(url=youtuba_link, label='Öffne YouTube Video')
+    st.link_button(url=youtube_link, label='Öffne YouTube Video')
     st.link_button(url=spotify_link, label='Öffne Spotify Lied')
     if video_link:
         st.video(video_link)
     st.divider()
-    st.header("Song History")
+    st.header(f"Song History von {user}")
     history = display_song_history(user)
     st.dataframe(history)
 
