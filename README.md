@@ -67,7 +67,7 @@ Das Projekt umfasst die Entwicklung einer Anwendung zur Musikerkennung und einer
 
 Das Klassendiagramm zeigt die Struktur der Klassen und deren Beziehungen zueinander. Es umfasst die Klassen User, Lied und relevante Hilfsklassen.
 
-![UML-Diagramm](https://github.com/timhornikel/SD_Abschlussprojekt/assets/129284019/1a2abf46-cdfe-416f-b023-1e6e74c86de7)
+![UML-Diagramm](https://github.com/timhornikel/SD_Abschlussprojekt/blob/main/UML_V2.png)
 
 
 ## Hinweise
