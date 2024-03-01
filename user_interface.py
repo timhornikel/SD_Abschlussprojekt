@@ -205,10 +205,10 @@ elif option == 'Musik erkennen':
                         progress_bar.empty()
                         # Ansicht wenn die Musikerkennung länger läuft
                         with st.spinner("Erkennen der Musikdatei..."):
-                            song = mr.recognise_song(tfile.name)  # Pass the temporary file path
+                            song = mr.recognise_song(tfile.name, st.session_state.logged_in_user)  # Pass the temporary file path
                             st.empty()
                             # Zeige die Musikinformationen
-                        mr.show_song_info(song)
+                        mr.show_song_info(song, st.session_state.logged_in_user)
                 except Exception as e:
                     st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
         elif recognition_option == ":microphone: Über Mikrofon erkennen":
@@ -217,7 +217,7 @@ elif option == 'Musik erkennen':
                     # Ansicht für die Aufnahme
                     with st.spinner("Nimmt Audio auf..."):
                         # Nimm Song auf und speicher 
-                        song = mr.listen_to_song()
+                        song = mr.listen_to_song(user=st.session_state.logged_in_user)
                         st.empty()
                     # Wenn es fertig aufgenommen ist zeige Progressbar und zeige die Musikinformationen
                     progress_bar = st.progress(0)
@@ -227,7 +227,7 @@ elif option == 'Musik erkennen':
                     time.sleep(0.8)
                     progress_bar.empty()
                     # Zeige Infos von dem Song
-                    mr.show_song_info(song)
+                    mr.show_song_info(song, st.session_state.logged_in_user)
             except Exception as e:
                 st.error(f'Fehler beim Erkennen der Musikdatei: {e}')
     else:

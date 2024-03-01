@@ -81,7 +81,7 @@ def best_match(matches):
     return matched_song
 
 
-def recognise_song(filename):
+def recognise_song(filename, user):
     """Recognises a song from a file.
     
     Returns:
@@ -91,13 +91,13 @@ def recognise_song(filename):
     matches = get_matches(hashes)
     matched_song = best_match(matches)
     info = get_info_for_song_id(matched_song)
-    save_song_history(info[2], info[1], info[0])
+    save_song_history(info[2], info[1], info[0], user)
     if info is not None:
         return info
     return matched_song
 
 
-def listen_to_song(filename=None):
+def listen_to_song(filename=None, user=None):
     """Listens to a song and recognises it.
     
     Returns:
@@ -108,20 +108,20 @@ def listen_to_song(filename=None):
     matches = get_matches(hashes)
     matched_song = best_match(matches)
     info = get_info_for_song_id(matched_song)
-    save_song_history(info[2], info[1], info[0])
+    save_song_history(info[2], info[1], info[0], user)
     if info is not None:
         return info
     return matched_song
 
 
-def display_song_history():
+def display_song_history(user):
     """Get the song history from the database.
     Display the song history as a pandas dataframe.
 
     Returns:
         pd.DataFrame: The song history.
     """
-    history = get_song_history()
+    history = get_song_history(user)
     df = pd.DataFrame(history, columns=["artist", "album", "title"])
     if df.empty:
         return "No song history"
@@ -129,7 +129,7 @@ def display_song_history():
         return df
 
 
-def show_song_info(song):
+def show_song_info(song, user):
     """Display the song meta data, album cover, links and song history."""
     st.divider()
     st.header("Erkannter Song")
@@ -153,7 +153,7 @@ def show_song_info(song):
         st.video(video_link)
     st.divider()
     st.header("Song History")
-    history = display_song_history()
+    history = display_song_history(user)
     st.dataframe(history)
 
 
